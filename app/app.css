@@ -1,152 +1,266 @@
-@import url("https://fonts.googleapis.com/css2?family=Mona+Sans:ital,wght@0,200..900;1,200..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap");
 @import "tailwindcss";
 @import "tw-animate-css";
 
 @theme {
-  --font-sans: "Mona Sans", ui-sans-serif, system-ui, sans-serif,
-    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-  --color-dark-200: #475467;
-  --color-light-blue-100: #c1d3f81a;
-  --color-light-blue-200: #a7bff14d;
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
 
-  --color-badge-green: #d5faf1;
-  --color-badge-red: #f9e3e2;
-  --color-badge-yellow: #fceed8;
+  /* Dark Theme Base Colors - Charcoal/Navy */
+  --color-dark-base: #0a0f1c; /* Very dark navy/charcoal */
+  --color-dark-surface: #131b2f;
+  --color-dark-surface-elevated: #1e293b;
+  --color-dark-border: rgba(255, 255, 255, 0.08);
 
-  --color-badge-green-text: #254d4a;
-  --color-badge-red-text: #752522;
-  --color-badge-yellow-text: #73321b;
+  /* Neon Vibrant Accents */
+  --color-neon-blue: #00f0ff;
+  --color-neon-purple: #b026ff;
+  --color-neon-pink: #ff007f;
+  --color-neon-green: #39ff14;
+  --color-neon-emerald: #10b981;
+  --color-neon-amber: #ffbf00;
+
+  /* Glass Effects */
+  --color-glass-dark: rgba(19, 27, 47, 0.6);
+  --color-glass-dark-hover: rgba(30, 41, 59, 0.7);
+  --color-glass-border: rgba(255, 255, 255, 0.1);
+  --color-glass-shadow: rgba(0, 0, 0, 0.5);
+  
+  --color-text-primary: #f8fafc;
+  --color-text-secondary: #94a3b8;
+  --color-text-muted: #64748b;
+
+  /* Retain old primary variables to not break things immediately, but map them to neon */
+  --color-primary-400: #00f0ff;
+  --color-primary-500: #00d2ff;
+  --color-primary-600: #3a8ffd;
+  --color-primary-sdt: rgba(0, 240, 255, 0.1);
+
+  /* Retain old dark variables */
+  --color-dark-100: #94a3b8;
+  --color-dark-200: #cbd5e1;
+  --color-dark-300: #e2e8f0;
+  --color-dark-400: #f8fafc;
+
+  /* Background mesh old variables */
+  --color-accent-purple: #b026ff;
+  --color-accent-pink: #ff007f;
+  --color-accent-cyan: #00f0ff;
+  --color-accent-emerald: #39ff14;
+  --color-accent-amber: #ffbf00;
+
+  /* Badge Colors (Neon Tinted) */
+  --color-badge-green: rgba(57, 255, 20, 0.1);
+  --color-badge-red: rgba(255, 0, 127, 0.1);
+  --color-badge-yellow: rgba(255, 191, 0, 0.1);
+
+  --color-badge-green-text: #39ff14;
+  --color-badge-red-text: #ff007f;
+  --color-badge-yellow-text: #ffbf00;
 }
 
 html,
 body {
-  @apply bg-white;
+  @apply bg-[#0a0f1c] text-text-primary antialiased selection:bg-neon-blue/30 selection:text-neon-blue;
+}
+
+body {
+  background-image: 
+    radial-gradient(circle at 15% 50%, rgba(176, 38, 255, 0.05) 0%, transparent 50%),
+    radial-gradient(circle at 85% 30%, rgba(0, 240, 255, 0.05) 0%, transparent 50%);
+  background-attachment: fixed;
 }
 
 main {
   @apply min-h-screen pt-10;
 }
+
 h1 {
-  @apply max-sm:text-[3rem] text-6xl  text-gradient leading-tight xl:tracking-[-2px] font-semibold;
+  @apply max-sm:text-4xl text-6xl text-text-primary leading-tight tracking-tight font-bold mb-4;
 }
 
 h2 {
-  @apply max-sm:text-xl text-3xl text-dark-200;
+  @apply max-sm:text-lg text-2xl text-text-secondary font-medium;
 }
 
 label {
-  @apply text-dark-200;
+  @apply text-text-secondary font-medium text-sm ml-1 mb-1 block;
 }
-input {
-  @apply w-full p-4 inset-shadow rounded-2xl focus:outline-none bg-white;
+
+input, textarea {
+  @apply w-full p-4 bg-dark-surface/80 backdrop-blur-md border border-dark-border shadow-sm rounded-2xl focus:outline-none focus:ring-2 focus:ring-neon-blue/50 focus:border-neon-blue transition-all duration-300 placeholder:text-text-muted text-text-primary;
 }
 
 textarea {
-  @apply w-full p-4 inset-shadow rounded-2xl focus:outline-none bg-white;
+  @apply resize-none;
 }
 
 form {
-  @apply flex flex-col items-start gap-8 w-full;
+  @apply flex flex-col items-start gap-6 w-full max-w-2xl mx-auto;
 }
 
 @layer components {
+  /* GLASMORPHISM HIGH TECH UTILITIES */
+  .glass-panel {
+    @apply bg-dark-surface/60 backdrop-blur-xl border border-glass-border shadow-lg rounded-3xl;
+  }
+  
+  .glass-panel-hover {
+    @apply hover:bg-dark-surface-elevated/70 hover:border-neon-blue/30 hover:shadow-[0_8px_30px_rgba(0,240,255,0.1)] transition-all duration-300;
+  }
+
   .text-gradient {
-    @apply bg-clip-text text-transparent bg-gradient-to-r from-[#AB8C95] via-[#000000] to-[#8E97C5];
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-neon-blue via-neon-purple to-neon-pink;
   }
+
+  .text-gradient-soft {
+    @apply bg-clip-text text-transparent bg-gradient-to-r from-text-primary to-text-secondary;
+  }
+
   .gradient-border {
-    @apply bg-gradient-to-b from-light-blue-100 to-light-blue-200 p-4 rounded-2xl;
+    @apply bg-dark-surface/60 backdrop-blur-xl border border-glass-border p-6 rounded-3xl shadow-[0_8px_30px_rgba(0,0,0,0.5)];
   }
+
   .primary-button {
-    @apply primary-gradient text-white rounded-full px-4 py-2 cursor-pointer w-full;
+    @apply bg-text-primary text-[#0a0f1c] rounded-full px-8 py-4 font-semibold hover:bg-neon-blue hover:text-[#0a0f1c] hover:shadow-[0_0_20px_rgba(0,240,255,0.4)] hover:-translate-y-0.5 transition-all duration-300 w-full active:scale-95 flex items-center justify-center gap-2;
   }
+
+  .secondary-button {
+    @apply bg-transparent text-text-primary border border-glass-border rounded-full px-8 py-4 font-semibold hover:bg-dark-surface hover:border-neon-blue/50 hover:text-neon-blue hover:-translate-y-0.5 transition-all duration-300 w-full active:scale-95;
+  }
+
   .resume-nav {
-    @apply flex flex-row justify-between items-center p-4 border-b border-gray-200;
+    @apply flex flex-row justify-between items-center p-6 border-b border-glass-border bg-dark-base/80 backdrop-blur-xl sticky top-0 z-50;
   }
+
   .resume-summary {
-    @apply flex flex-row items-center justify-center p-4 gap-4;
+    @apply flex flex-row items-center justify-center p-6 gap-6 max-md:flex-col;
+
     .category {
-      @apply flex flex-row gap-2 items-center bg-gray-50 rounded-2xl p-4 w-full justify-between;
+      @apply flex flex-row gap-3 items-center bg-dark-surface border border-glass-border shadow-sm rounded-3xl p-5 w-full justify-between hover:border-neon-purple/50 transition-colors;
     }
   }
+
   .back-button {
-    @apply flex flex-row items-center gap-2 border border-gray-200 rounded-lg p-2 shadow-sm;
+    @apply flex flex-row items-center gap-2 text-text-secondary hover:text-neon-blue transition-colors font-medium px-4 py-2 rounded-full hover:bg-dark-surface;
   }
-  .auth-button {
-    @apply primary-gradient rounded-full py-4 px-8 cursor-pointer w-[600px] max-md:w-full text-3xl font-semibold text-white;
-  }
+
   .main-section {
-    @apply flex flex-col items-center gap-8 pt-12 max-sm:mx-2 mx-15 pb-5;
+    @apply flex flex-col items-center gap-10 pt-16 max-sm:mx-4 mx-16 pb-12;
   }
+
   .page-heading {
-    @apply flex flex-col items-center gap-8 max-w-4xl text-center max-sm:gap-4;
+    @apply flex flex-col items-center gap-4 max-w-3xl text-center;
   }
+
   .resumes-section {
-    @apply flex flex-wrap max-md:flex-col max-md:gap-4 gap-6 items-start max-md:items-center w-full max-w-[1850px] justify-evenly;
+    @apply flex flex-wrap max-md:flex-col max-md:gap-6 gap-8 items-start justify-center w-full max-w-7xl mx-auto;
   }
 
   .resume-card {
-    @apply flex flex-col gap-8 h-[560px] w-[350px] lg:w-[430px] xl:w-[490px] bg-white rounded-2xl p-4;
+    @apply flex flex-col justify-between h-[480px] w-full sm:w-[350px] lg:w-[400px] bg-dark-surface/60 backdrop-blur-xl border border-glass-border rounded-[2rem] p-8 hover:border-neon-blue/30 hover:shadow-[0_0_30px_rgba(0,240,255,0.1)] transition-all duration-500 hover:-translate-y-2 relative overflow-hidden cursor-pointer;
   }
 
   .resume-card-header {
-    @apply flex flex-row gap-2 justify-between min-h-[110px] max-sm:flex-col items-center max-md:justify-center max-md:items-center;
+    @apply flex flex-col gap-3 min-h-[100px] items-start;
   }
 
   .feedback-section {
-    @apply flex flex-col gap-8 w-1/2 px-8 max-lg:w-full py-6;
+    @apply flex flex-col gap-8 w-1/2 px-10 max-lg:w-full py-8;
   }
 
   .navbar {
-    @apply flex flex-row justify-between items-center bg-white rounded-full p-4 w-full px-10 max-w-[1200px] mx-auto;
+    @apply flex flex-row justify-between items-center bg-dark-surface/70 backdrop-blur-xl border border-glass-border shadow-lg rounded-full p-4 w-full px-8 max-w-[1000px] mx-auto sticky top-6 z-50 transition-all duration-500 hover:bg-dark-surface/90 hover:border-neon-blue/30;
   }
 
   .score-badge {
-    @apply flex flex-row items-center justify-center py-1 px-2 gap-4 rounded-[96px];
+    @apply flex flex-row items-center justify-center py-1.5 px-3 gap-2 rounded-full font-bold text-sm tracking-wide;
   }
 
   .form-div {
-    @apply flex flex-col gap-2 w-full items-start;
+    @apply flex flex-col w-full items-start relative;
   }
 
-  .uplader-drag-area {
-    @apply relative p-8 text-center transition-all duration-700 cursor-pointer bg-white rounded-2xl min-h-[208px];
+  .uploader-drag-area {
+    @apply relative p-12 text-center transition-all duration-500 cursor-pointer bg-dark-surface/40 border-2 border-dashed border-glass-border hover:border-neon-blue/60 hover:bg-neon-blue/5 rounded-3xl min-h-[240px] flex flex-col items-center justify-center gap-4 backdrop-blur-sm;
   }
+  
+  .uploader-drag-area.active {
+    @apply border-neon-blue bg-neon-blue/10 scale-[1.02];
+  }
+
   .uploader-selected-file {
-    @apply flex items-center justify-between p-3 bg-gray-50 rounded-2xl;
+    @apply flex items-center justify-between p-4 bg-dark-surface border border-glass-border shadow-sm rounded-2xl;
+  }
+
+  /* Glassmorphism Effects */
+  .glass-card {
+    @apply bg-dark-surface/70 backdrop-blur-2xl border border-glass-border shadow-lg rounded-[2rem];
+  }
+
+  /* Glow Effect */
+  .glow-neon-blue {
+    box-shadow: 0 0 30px rgba(0, 240, 255, 0.3);
+  }
+  
+  .glow-neon-purple {
+    box-shadow: 0 0 30px rgba(176, 38, 255, 0.3);
+  }
+
+  /* Hover Lift Effect */
+  .hover-lift {
+    @apply transition-transform duration-500 ease-out;
+  }
+
+  .hover-lift:hover {
+    @apply -translate-y-1.5 shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)];
   }
 }
 
 @utility bg-gradient {
-  background: linear-gradient(to bottom, #f0f4ff 60%, #fa7185cc);
+  background: radial-gradient(circle at top right, #131b2f 0%, #0a0f1c 100%);
+}
+
+@utility bg-mesh {
+  background-color: #0a0f1c;
+  background-image: 
+    radial-gradient(at 40% 20%, rgba(176, 38, 255, 0.15) 0px, transparent 50%),
+    radial-gradient(at 80% 0%, rgba(0, 240, 255, 0.15) 0px, transparent 50%),
+    radial-gradient(at 0% 50%, rgba(255, 0, 127, 0.1) 0px, transparent 50%),
+    radial-gradient(at 80% 50%, rgba(57, 255, 20, 0.1) 0px, transparent 50%),
+    radial-gradient(at 0% 100%, rgba(255, 191, 0, 0.05) 0px, transparent 50%);
+  opacity: 1;
+  filter: blur(80px);
 }
 
 @utility text-gradient {
-  @apply bg-clip-text text-transparent bg-gradient-to-r from-[#AB8C95] via-[#000000] to-[#8E97C5];
+  @apply bg-clip-text text-transparent bg-gradient-to-r from-neon-blue to-neon-purple;
 }
 
 @utility gradient-hover {
-  @apply bg-gradient-to-b from-light-blue-100 to-light-blue-200;
+  @apply bg-dark-surface hover:bg-dark-surface-elevated transition-colors;
 }
 
 @utility primary-gradient {
-  background: linear-gradient(to bottom, #8e98ff, #606beb);
-  box-shadow: 0px 74px 21px 0px #6678ef00;
+  background: linear-gradient(135deg, #00f0ff 0%, #b026ff 100%);
+  box-shadow: 0px 8px 20px rgba(0, 240, 255, 0.3);
 }
 
 @utility primary-gradient-hover {
-  background: linear-gradient(to bottom, #717dff, #4957eb);
-}
-
-@utility inset-shadow {
-  box-shadow: inset 0 0 12px 0 rgba(36, 99, 235, 0.2);
-  backdrop-filter: blur(10px);
+  background: linear-gradient(135deg, #00d2ff 0%, #9a1bf0 100%);
+  box-shadow: 0px 8px 25px rgba(0, 240, 255, 0.5);
 }
 
 @keyframes fadeIn {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+  from { opacity: 0; transform: translateY(10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+@keyframes pulse-soft {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.85; transform: scale(1.02); }
 }
