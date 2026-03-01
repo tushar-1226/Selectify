@@ -1,17 +1,29 @@
 import type { ReactNode } from "react";
-import Sidebar from "./Sidebar";
+import Navbar from "./Navbar";
 import AnimatedBackground from "./AnimatedBackground";
 
 export default function AppLayout({ children }: { children: ReactNode }) {
   return (
-    <div className="flex min-h-screen w-full relative selection:bg-neon-blue/30 selection:text-neon-blue">
+    <div className="flex flex-col min-h-screen w-full relative bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
       <AnimatedBackground />
-      <Sidebar />
-      <main className="flex-1 ml-64 p-8 xl:p-12 relative z-10 transition-all duration-500 overflow-x-hidden">
-        <div className="max-w-6xl mx-auto w-full">
-          {children}
-        </div>
+      <Navbar />
+      <main className="flex-1 relative z-10">
+        {children}
       </main>
+      {/* Footer */}
+      <footer className="border-t border-slate-800/50 py-12 px-6 mt-20 z-10">
+        <div className="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 bg-slate-700 rounded flex items-center justify-center text-xs font-bold text-white">S</div>
+            <span className="font-bold text-slate-400">Selectify © 2024</span>
+          </div>
+          <div className="flex gap-8 text-sm text-slate-500">
+            <a className="hover:text-sky-400 transition-colors" href="#privacy">Privacy Policy</a>
+            <a className="hover:text-sky-400 transition-colors" href="#terms">Terms of Service</a>
+            <a className="hover:text-sky-400 transition-colors" href="#support">Contact Support</a>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 }

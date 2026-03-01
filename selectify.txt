@@ -1,0 +1,26 @@
+# Selectify - Project Overview
+
+Selectify is an AI-powered resume analytics and career development platform designed to help professionals align their profiles with target roles. Through comprehensive document analysis, it evaluates candidate resumes against specific job descriptions to provide actionable insights.
+
+## Core Features
+1. **Resume Analysis Engine**: Users can upload their resume (PDF) alongside a target job description. The application parses the document and uses Google's Gemini AI to generate an ATS score, identify skills matches, and compute keyword alignments.
+2. **AI-Driven Insights**: Provides detailed feedback on resume strengths, weaknesses, and improvement areas to help candidates optimize their applications.
+3. **Career Mapping (Roadmap)**: Generates a dynamic, interactive "Career Path" timeline. It maps out potential future roles (e.g., Staff Engineer, Engineering Manager), assessing current skills alignment and recommending specific certifications or steps to bridge the gap.
+4. **Application Tracking**: A centralized dashboard to manage previous resume analyses and track application readiness over time.
+
+## Technical Stack
+- **Frontend Framework**: React Router v7 
+- **Styling**: Tailwind CSS (featuring a custom dark, glassmorphic UI with neon accents, complex gradients, and smooth animations)
+- **AI Integration**: `@google/generative-ai` (Gemini API) for processing resume content and generating insights.
+- **Backend/Storage**: Puter.js (`@puter/puter.js`) utilized for file system storage (saving PDFs/Images) and key-value store (saving analysis data/caching).
+- **PDF Processing**: Integrated PDF parsing tools to extract text and generate preview images of the uploaded resumes locally before analysis.
+
+## Key Application Routes
+- `/`: **Dashboard** - Overview of recent analyses and quick actions.
+- `/upload`: **Evaluate Fit** - The main entry point where users submit their Resume + Job Description.
+- `/analysis`: **Analytics Overview** - In-depth breakdown of ATS score performance, skills alignment charts, and AI feedback.
+- `/career-path`: **Growth Roadmap** - Visual timeline of potential future roles and upskilling recommendations.
+- `/job-matches`: **Tracker** - Historical view of all evaluated roles.
+
+## Project Architecture
+Selectify runs as a modern server-side rendered (or statically generated) application using the latest React Router conventions. It securely proxies AI requests through server endpoints (`/api/analyze`) to protect the `GEMINI_API_KEY` while providing a snappy, highly-polished user interface on the client side.

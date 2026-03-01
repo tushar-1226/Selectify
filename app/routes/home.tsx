@@ -1,9 +1,6 @@
 import type { Route } from "./+types/home";
-import ResumeCard from "~/components/ResumeCard";
-import { usePuterStore } from "~/lib/puter";
 import { Link } from "react-router";
 import { useEffect, useState } from "react";
-import LoadingSpinner from "~/components/LoadingSpinner";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -13,81 +10,125 @@ export function meta({ }: Route.MetaArgs) {
 }
 
 export default function Home() {
-  const { kv } = usePuterStore();
-  const [resumes, setResumes] = useState<Resume[]>([]);
-  const [loadingResumes, setLoadingResumes] = useState(false);
-
-  useEffect(() => {
-    const loadResumes = async () => {
-      setLoadingResumes(true);
-
-      const resumes = (await kv.list('resume:*', true)) as KVItem[];
-
-      const parsedResumes = resumes?.map((resume) => (
-        JSON.parse(resume.value) as Resume
-      ))
-
-      setResumes(parsedResumes || []);
-      setLoadingResumes(false);
-    }
-
-    loadResumes()
-  }, [kv]);
-
-  return <div className="pb-20">
-    <div className="page-heading animate-in fade-in slide-in-from-bottom-4 duration-700">
-      <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-neon-blue/10 border border-neon-blue/20 text-neon-blue text-sm font-medium mb-4 backdrop-blur-md glow-neon-blue">
-        <span className="relative flex h-2 w-2">
-          <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-neon-blue opacity-75"></span>
-          <span className="relative inline-flex rounded-full h-2 w-2 bg-neon-blue"></span>
-        </span>
-        Your Dashboard
-      </div>
-      <h1 className="text-text-primary">Track and improve your applications</h1>
-      {!loadingResumes && resumes?.length === 0 ? (
-        <h2 className="text-text-secondary mt-2">Upload your first resume to get AI-powered, actionable feedback.</h2>
-      ) : (
-        <h2 className="text-text-secondary mt-2">Review your past submissions and view detailed ATS scores.</h2>
-      )}
-    </div>
-
-    {loadingResumes && (
-      <div className="flex flex-col items-center justify-center gap-4 py-20 animate-in fade-in duration-500">
-        <LoadingSpinner size="lg" />
-        <p className="text-text-secondary font-medium tracking-wide">Fetching your resumes...</p>
-      </div>
-    )}
-
-    {!loadingResumes && resumes.length > 0 && (
-      <div className="resumes-section mt-12 grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-8">
-        {resumes.map((resume, index) => (
-          <div
-            key={resume.id}
-            style={{ animationDelay: `${index * 150}ms` }}
-            className="animate-in fade-in slide-in-from-bottom-8 duration-700 fill-mode-both w-full"
-          >
-            <ResumeCard resume={resume} />
-          </div>
-        ))}
-      </div>
-    )}
-
-    {!loadingResumes && resumes?.length === 0 && (
-      <div className="flex flex-col items-center justify-center mt-12 py-16 px-8 max-w-2xl mx-auto glass-card animate-in fade-in slide-in-from-bottom-4 duration-700">
-        <div className="w-20 h-20 bg-neon-blue/10 text-neon-blue rounded-full flex items-center justify-center mb-6 glow-neon-blue">
-            <svg className="w-10 h-10" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-            </svg>
+  return (
+    <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+      <div className="text-center mb-16">
+        <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-semibold mb-6">
+          <span className="relative flex h-2 w-2">
+            <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-primary opacity-75"></span>
+            <span className="relative inline-flex rounded-full h-2 w-2 bg-primary"></span>
+          </span>
+          YOUR DASHBOARD
         </div>
-        <h3 className="text-2xl font-semibold mb-2 text-text-primary">No resumes yet</h3>
-        <p className="text-text-secondary text-center mb-8 max-w-md">Start your journey by uploading a resume and pasting a job description. We'll give you a detailed ATS score and improvement tips.</p>
-        <Link to="/upload" className="primary-button group max-w-xs">
-          Upload Your First Resume
-          <svg className="w-5 h-5 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
-          </svg>
+        <h1 className="text-5xl md:text-6xl font-extrabold tracking-tight mb-6 bg-clip-text text-transparent bg-gradient-to-b from-white to-slate-400">
+          Track and improve your<br/>applications
+        </h1>
+        <p className="text-slate-400 text-lg max-w-2xl mx-auto">
+          Upload your first resume to get AI-powered, actionable feedback and start tracking your journey to your dream job.
+        </p>
+      </div>
+
+      <div className="max-w-3xl mx-auto mb-24">
+        <Link to="/upload" className="block">
+          <div className="dotted-border p-12 text-center group cursor-pointer hover:border-primary/50 transition-all duration-300 bg-slate-900/40">
+            <div className="w-16 h-16 bg-primary/20 rounded-2xl flex items-center justify-center mx-auto mb-6 group-hover:scale-110 transition-transform duration-300 shadow-[0_0_15px_rgba(14,165,233,0.1)]">
+              <span className="material-symbols-outlined text-primary text-3xl">cloud_upload</span>
+            </div>
+            <h3 className="text-xl font-bold mb-2">No resumes yet</h3>
+            <p className="text-slate-400 mb-6">Start your journey by uploading a resume and pasting a job description. We'll give you a detailed ATS score and feedback.</p>
+            <button className="bg-white dark:bg-slate-800 text-slate-900 dark:text-white px-8 py-3 rounded-xl font-bold border border-slate-200 dark:border-slate-700 hover:bg-slate-100 dark:hover:bg-slate-700 transition-all inline-flex items-center gap-2">
+              <span className="material-symbols-outlined">upload_file</span>
+              Upload Resume
+            </button>
+            <p className="mt-4 text-xs text-slate-500">PDF, DOCX up to 10MB</p>
+          </div>
         </Link>
       </div>
-    )}
-  </div>
+
+      <div className="mb-24">
+        <div className="flex items-center justify-between mb-10">
+          <h2 className="text-2xl font-bold">How it works</h2>
+          <div className="h-px flex-1 bg-slate-800 mx-8 hidden md:block"></div>
+        </div>
+        <div className="grid md:grid-cols-3 gap-8">
+          <div className="glass p-8 rounded-3xl relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 text-8xl font-black text-white/5 group-hover:text-primary/10 transition-colors">1</div>
+            <div className="w-12 h-12 bg-indigo-500/20 rounded-xl flex items-center justify-center mb-6">
+              <span className="material-symbols-outlined text-indigo-400">description</span>
+            </div>
+            <h3 className="text-xl font-bold mb-3">Upload Resume</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">Simply upload your current resume in PDF or Word format to get started.</p>
+          </div>
+          <div className="glass p-8 rounded-3xl relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 text-8xl font-black text-white/5 group-hover:text-primary/10 transition-colors">2</div>
+            <div className="w-12 h-12 bg-primary/20 rounded-xl flex items-center justify-center mb-6">
+              <span className="material-symbols-outlined text-primary">psychology</span>
+            </div>
+            <h3 className="text-xl font-bold mb-3">AI Analysis</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">Our AI analyzes your skills against job requirements and identifies gaps.</p>
+          </div>
+          <div className="glass p-8 rounded-3xl relative overflow-hidden group">
+            <div className="absolute -right-4 -top-4 text-8xl font-black text-white/5 group-hover:text-primary/10 transition-colors">3</div>
+            <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center mb-6">
+              <span className="material-symbols-outlined text-emerald-400">rocket_launch</span>
+            </div>
+            <h3 className="text-xl font-bold mb-3">Track Success</h3>
+            <p className="text-slate-400 text-sm leading-relaxed">Manage applications and track your progress in a central dashboard.</p>
+          </div>
+        </div>
+      </div>
+
+      <div>
+        <div className="flex items-center justify-between mb-10">
+          <h2 className="text-2xl font-bold">Recent Analysis</h2>
+          <Link to="/job-matches" className="text-primary text-sm font-semibold flex items-center gap-1 hover:underline">
+            View all <span className="material-symbols-outlined text-sm">arrow_forward</span>
+          </Link>
+        </div>
+        <div className="grid gap-4 opacity-40 grayscale pointer-events-none">
+          <div className="glass p-5 rounded-2xl flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center">
+                <span className="material-symbols-outlined text-slate-500">article</span>
+              </div>
+              <div>
+                <h4 className="font-bold">Senior Software Engineer</h4>
+                <p className="text-xs text-slate-500">Google • Analyzed 2 hours ago</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-8">
+              <div className="text-right">
+                <div className="text-sm font-bold text-emerald-400">88% Match</div>
+                <div className="text-[10px] text-slate-500 tracking-wider uppercase">ATS Score</div>
+              </div>
+              <div className="h-8 w-px bg-slate-800"></div>
+              <button className="px-4 py-2 bg-slate-800 rounded-lg text-xs font-bold">View Report</button>
+            </div>
+          </div>
+          <div className="glass p-5 rounded-2xl flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-slate-800 rounded-xl flex items-center justify-center">
+                <span className="material-symbols-outlined text-slate-500">article</span>
+              </div>
+              <div>
+                <h4 className="font-bold">Product Designer</h4>
+                <p className="text-xs text-slate-500">Airbnb • Analyzed yesterday</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-8">
+              <div className="text-right">
+                <div className="text-sm font-bold text-amber-400">62% Match</div>
+                <div className="text-[10px] text-slate-500 tracking-wider uppercase">ATS Score</div>
+              </div>
+              <div className="h-8 w-px bg-slate-800"></div>
+              <button className="px-4 py-2 bg-slate-800 rounded-lg text-xs font-bold">View Report</button>
+            </div>
+          </div>
+        </div>
+        <div className="mt-8 text-center">
+          <p className="text-sm text-slate-500 italic">Example preview. Your actual analyses will appear here.</p>
+        </div>
+      </div>
+    </main>
+  );
 }
