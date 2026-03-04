@@ -1,0 +1,444 @@
+{
+  "buildManifest": {
+    "serverBundles": {
+      "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0": {
+        "id": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+        "file": "build/server/nodejs_eyJydW50aW1lIjoibm9kZWpzIn0/index.js",
+        "config": {
+          "runtime": "nodejs"
+        }
+      }
+    },
+    "routeIdToServerBundleId": {
+      "root": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/home": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/upload": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/resume": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/analysis": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/job-matches": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/resume-editor": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/interview-prep": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/career-path": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/dsa-practice": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/dsa-problem.$id": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/dsa-report": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/mock-interview": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/mock-session": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/register": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/logout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.analyze": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.evaluate-dsa": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.evaluate-mock": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/api.generate-questions": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0"
+    },
+    "routes": {
+      "root": {
+        "id": "root",
+        "file": "app/root.tsx",
+        "path": "",
+        "config": {
+          "runtime": "nodejs"
+        }
+      },
+      "routes/layout": {
+        "id": "routes/layout",
+        "parentId": "root",
+        "file": "app/routes/layout.tsx",
+        "config": {}
+      },
+      "routes/home": {
+        "id": "routes/home",
+        "parentId": "routes/layout",
+        "file": "app/routes/home.tsx",
+        "index": true,
+        "config": {}
+      },
+      "routes/upload": {
+        "id": "routes/upload",
+        "parentId": "routes/layout",
+        "file": "app/routes/upload.tsx",
+        "path": "/upload",
+        "config": {}
+      },
+      "routes/resume": {
+        "id": "routes/resume",
+        "parentId": "routes/layout",
+        "file": "app/routes/resume.tsx",
+        "path": "/resume/:id",
+        "config": {}
+      },
+      "routes/analysis": {
+        "id": "routes/analysis",
+        "parentId": "routes/layout",
+        "file": "app/routes/analysis.tsx",
+        "path": "/analysis",
+        "config": {}
+      },
+      "routes/job-matches": {
+        "id": "routes/job-matches",
+        "parentId": "routes/layout",
+        "file": "app/routes/job-matches.tsx",
+        "path": "/job-matches",
+        "config": {}
+      },
+      "routes/resume-editor": {
+        "id": "routes/resume-editor",
+        "parentId": "routes/layout",
+        "file": "app/routes/resume-editor.tsx",
+        "path": "/resume-editor",
+        "config": {}
+      },
+      "routes/interview-prep": {
+        "id": "routes/interview-prep",
+        "parentId": "routes/layout",
+        "file": "app/routes/interview-prep.tsx",
+        "path": "/interview-prep",
+        "config": {}
+      },
+      "routes/career-path": {
+        "id": "routes/career-path",
+        "parentId": "routes/layout",
+        "file": "app/routes/career-path.tsx",
+        "path": "/career-path",
+        "config": {}
+      },
+      "routes/dsa-practice": {
+        "id": "routes/dsa-practice",
+        "parentId": "routes/layout",
+        "file": "app/routes/dsa-practice.tsx",
+        "path": "/dsa-practice",
+        "config": {}
+      },
+      "routes/dsa-problem.$id": {
+        "id": "routes/dsa-problem.$id",
+        "parentId": "routes/layout",
+        "file": "app/routes/dsa-problem.$id.tsx",
+        "path": "/dsa-practice/:id",
+        "config": {}
+      },
+      "routes/dsa-report": {
+        "id": "routes/dsa-report",
+        "parentId": "routes/layout",
+        "file": "app/routes/dsa-report.tsx",
+        "path": "/dsa-report",
+        "config": {}
+      },
+      "routes/mock-interview": {
+        "id": "routes/mock-interview",
+        "parentId": "routes/layout",
+        "file": "app/routes/mock-interview.tsx",
+        "path": "/mock-interview",
+        "config": {}
+      },
+      "routes/mock-session": {
+        "id": "routes/mock-session",
+        "parentId": "routes/layout",
+        "file": "app/routes/mock-session.tsx",
+        "path": "/mock-session",
+        "config": {}
+      },
+      "routes/login": {
+        "id": "routes/login",
+        "parentId": "root",
+        "file": "app/routes/login.tsx",
+        "path": "/login",
+        "config": {}
+      },
+      "routes/register": {
+        "id": "routes/register",
+        "parentId": "root",
+        "file": "app/routes/register.tsx",
+        "path": "/register",
+        "config": {}
+      },
+      "routes/logout": {
+        "id": "routes/logout",
+        "parentId": "root",
+        "file": "app/routes/logout.tsx",
+        "path": "/logout",
+        "config": {}
+      },
+      "routes/api.analyze": {
+        "id": "routes/api.analyze",
+        "parentId": "root",
+        "file": "app/routes/api.analyze.ts",
+        "path": "/api/analyze",
+        "config": {}
+      },
+      "routes/api.evaluate-dsa": {
+        "id": "routes/api.evaluate-dsa",
+        "parentId": "root",
+        "file": "app/routes/api.evaluate-dsa.ts",
+        "path": "/api/evaluate-dsa",
+        "config": {}
+      },
+      "routes/api.evaluate-mock": {
+        "id": "routes/api.evaluate-mock",
+        "parentId": "root",
+        "file": "app/routes/api.evaluate-mock.ts",
+        "path": "/api/evaluate-mock",
+        "config": {}
+      },
+      "routes/api.generate-questions": {
+        "id": "routes/api.generate-questions",
+        "parentId": "root",
+        "file": "app/routes/api.generate-questions.ts",
+        "path": "/api/generate-questions",
+        "config": {}
+      }
+    }
+  },
+  "reactRouterConfig": {
+    "appDirectory": "/home/tushar/Developer/Dev/Selectify/app",
+    "basename": "/",
+    "buildDirectory": "/home/tushar/Developer/Dev/Selectify/build",
+    "future": {
+      "unstable_optimizeDeps": false,
+      "unstable_subResourceIntegrity": false,
+      "unstable_trailingSlashAwareDataRequests": false,
+      "v8_middleware": false,
+      "v8_splitRouteModules": false,
+      "v8_viteEnvironmentApi": false
+    },
+    "routes": {
+      "root": {
+        "id": "root",
+        "file": "root.tsx",
+        "path": ""
+      },
+      "routes/layout": {
+        "id": "routes/layout",
+        "parentId": "root",
+        "file": "routes/layout.tsx"
+      },
+      "routes/home": {
+        "id": "routes/home",
+        "parentId": "routes/layout",
+        "file": "routes/home.tsx",
+        "index": true
+      },
+      "routes/upload": {
+        "id": "routes/upload",
+        "parentId": "routes/layout",
+        "file": "routes/upload.tsx",
+        "path": "/upload"
+      },
+      "routes/resume": {
+        "id": "routes/resume",
+        "parentId": "routes/layout",
+        "file": "routes/resume.tsx",
+        "path": "/resume/:id"
+      },
+      "routes/analysis": {
+        "id": "routes/analysis",
+        "parentId": "routes/layout",
+        "file": "routes/analysis.tsx",
+        "path": "/analysis"
+      },
+      "routes/job-matches": {
+        "id": "routes/job-matches",
+        "parentId": "routes/layout",
+        "file": "routes/job-matches.tsx",
+        "path": "/job-matches"
+      },
+      "routes/resume-editor": {
+        "id": "routes/resume-editor",
+        "parentId": "routes/layout",
+        "file": "routes/resume-editor.tsx",
+        "path": "/resume-editor"
+      },
+      "routes/interview-prep": {
+        "id": "routes/interview-prep",
+        "parentId": "routes/layout",
+        "file": "routes/interview-prep.tsx",
+        "path": "/interview-prep"
+      },
+      "routes/career-path": {
+        "id": "routes/career-path",
+        "parentId": "routes/layout",
+        "file": "routes/career-path.tsx",
+        "path": "/career-path"
+      },
+      "routes/dsa-practice": {
+        "id": "routes/dsa-practice",
+        "parentId": "routes/layout",
+        "file": "routes/dsa-practice.tsx",
+        "path": "/dsa-practice"
+      },
+      "routes/dsa-problem.$id": {
+        "id": "routes/dsa-problem.$id",
+        "parentId": "routes/layout",
+        "file": "routes/dsa-problem.$id.tsx",
+        "path": "/dsa-practice/:id"
+      },
+      "routes/dsa-report": {
+        "id": "routes/dsa-report",
+        "parentId": "routes/layout",
+        "file": "routes/dsa-report.tsx",
+        "path": "/dsa-report"
+      },
+      "routes/mock-interview": {
+        "id": "routes/mock-interview",
+        "parentId": "routes/layout",
+        "file": "routes/mock-interview.tsx",
+        "path": "/mock-interview"
+      },
+      "routes/mock-session": {
+        "id": "routes/mock-session",
+        "parentId": "routes/layout",
+        "file": "routes/mock-session.tsx",
+        "path": "/mock-session"
+      },
+      "routes/login": {
+        "id": "routes/login",
+        "parentId": "root",
+        "file": "routes/login.tsx",
+        "path": "/login"
+      },
+      "routes/register": {
+        "id": "routes/register",
+        "parentId": "root",
+        "file": "routes/register.tsx",
+        "path": "/register"
+      },
+      "routes/logout": {
+        "id": "routes/logout",
+        "parentId": "root",
+        "file": "routes/logout.tsx",
+        "path": "/logout"
+      },
+      "routes/api.analyze": {
+        "id": "routes/api.analyze",
+        "parentId": "root",
+        "file": "routes/api.analyze.ts",
+        "path": "/api/analyze"
+      },
+      "routes/api.evaluate-dsa": {
+        "id": "routes/api.evaluate-dsa",
+        "parentId": "root",
+        "file": "routes/api.evaluate-dsa.ts",
+        "path": "/api/evaluate-dsa"
+      },
+      "routes/api.evaluate-mock": {
+        "id": "routes/api.evaluate-mock",
+        "parentId": "root",
+        "file": "routes/api.evaluate-mock.ts",
+        "path": "/api/evaluate-mock"
+      },
+      "routes/api.generate-questions": {
+        "id": "routes/api.generate-questions",
+        "parentId": "root",
+        "file": "routes/api.generate-questions.ts",
+        "path": "/api/generate-questions"
+      }
+    },
+    "routeDiscovery": {
+      "mode": "lazy",
+      "manifestPath": "/__manifest"
+    },
+    "serverBuildFile": "index.js",
+    "serverModuleFormat": "esm",
+    "ssr": true,
+    "allowedActionOrigins": false,
+    "unstable_routeConfig": [
+      {
+        "id": "root",
+        "path": "",
+        "file": "root.tsx",
+        "children": [
+          {
+            "file": "routes/layout.tsx",
+            "children": [
+              {
+                "file": "routes/home.tsx",
+                "index": true
+              },
+              {
+                "file": "routes/upload.tsx",
+                "path": "/upload"
+              },
+              {
+                "file": "routes/resume.tsx",
+                "path": "/resume/:id"
+              },
+              {
+                "file": "routes/analysis.tsx",
+                "path": "/analysis"
+              },
+              {
+                "file": "routes/job-matches.tsx",
+                "path": "/job-matches"
+              },
+              {
+                "file": "routes/resume-editor.tsx",
+                "path": "/resume-editor"
+              },
+              {
+                "file": "routes/interview-prep.tsx",
+                "path": "/interview-prep"
+              },
+              {
+                "file": "routes/career-path.tsx",
+                "path": "/career-path"
+              },
+              {
+                "file": "routes/dsa-practice.tsx",
+                "path": "/dsa-practice"
+              },
+              {
+                "file": "routes/dsa-problem.$id.tsx",
+                "path": "/dsa-practice/:id"
+              },
+              {
+                "file": "routes/dsa-report.tsx",
+                "path": "/dsa-report"
+              },
+              {
+                "file": "routes/mock-interview.tsx",
+                "path": "/mock-interview"
+              },
+              {
+                "file": "routes/mock-session.tsx",
+                "path": "/mock-session"
+              }
+            ]
+          },
+          {
+            "file": "routes/login.tsx",
+            "path": "/login"
+          },
+          {
+            "file": "routes/register.tsx",
+            "path": "/register"
+          },
+          {
+            "file": "routes/logout.tsx",
+            "path": "/logout"
+          },
+          {
+            "file": "routes/api.analyze.ts",
+            "path": "/api/analyze"
+          },
+          {
+            "file": "routes/api.evaluate-dsa.ts",
+            "path": "/api/evaluate-dsa"
+          },
+          {
+            "file": "routes/api.evaluate-mock.ts",
+            "path": "/api/evaluate-mock"
+          },
+          {
+            "file": "routes/api.generate-questions.ts",
+            "path": "/api/generate-questions"
+          }
+        ]
+      }
+    ]
+  },
+  "viteConfig": {
+    "build": {
+      "assetsDir": "assets"
+    }
+  }
+}

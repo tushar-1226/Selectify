@@ -1,7 +1,5 @@
 import { PrismaClient } from "@prisma/client";
-import { PrismaBetterSqlite3 } from "@prisma/adapter-better-sqlite3";
 import "dotenv/config";
-import path from "path";
 
 let prisma: PrismaClient;
 
@@ -10,13 +8,7 @@ declare global {
 }
 
 function createPrismaClient() {
-  // Resolve the SQLite database path relative to project root
-  const dbUrl = process.env.DATABASE_URL || "file:./dev.db";
-  const dbPath = dbUrl.replace("file:", "").replace(/^\.\//, "");
-  const absoluteDbPath = path.resolve(process.cwd(), dbPath);
-
-  const adapter = new PrismaBetterSqlite3({ url: absoluteDbPath });
-  return new PrismaClient({ adapter });
+  return new PrismaClient();
 }
 
 // Avoid creating multiple Prisma clients in development (hot-reload)
