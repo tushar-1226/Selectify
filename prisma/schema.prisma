@@ -1,0 +1,73 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+model User {
+  id           String   @id @default(cuid())
+  email        String   @unique
+  passwordHash String
+  name         String?
+  createdAt    DateTime @default(now())
+
+  resumes      ResumeAnalysis[]
+  mockSessions MockSession[]
+  dsaGoals     DSAGoal[]
+  dsaProgress  DSAProgress[]
+}
+
+model ResumeAnalysis {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  resumeText   String
+  analysisData String   // JSON blob of Gemini analysis
+  createdAt    DateTime @default(now())
+}
+
+model MockSession {
+  id              String    @id @default(cuid())
+  userId          String
+  user            User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  type            String
+  difficulty      String
+  targetRole      String    @default("Software Engineer")
+  overallScore    Float?
+  questionsData   String    // JSON blob of generated questions
+  answersData     String?   // JSON blob of user answers
+  evaluationsData String?   // JSON blob of AI evaluations
+  startedAt       DateTime  @default(now())
+  completedAt     DateTime?
+}
+
+model DSAGoal {
+  id           String   @id @default(cuid())
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title        String
+  targetCount  Int
+  category     String?
+  difficulty   String?
+  createdAt    DateTime @default(now())
+}
+
+model DSAProgress {
+  id            String   @id @default(cuid())
+  userId        String
+  user          User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemId     String
+  status        String   @default("unsolved")
+  isCorrect     Boolean  @default(false)
+  submittedCode String   @default("")
+  language      String   @default("javascript")
+  aiReview      String?  // Cached Gemini feedback
+  submittedAt   DateTime @default(now())
+
+  @@unique([userId, problemId])
+}

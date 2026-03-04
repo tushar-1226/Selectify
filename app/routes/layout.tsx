@@ -1,21 +1,23 @@
-import { Outlet, useNavigate } from "react-router";
+import { Outlet, useLoaderData } from "react-router";
 import AppLayout from "~/components/AppLayout";
-import { usePuterStore } from "~/lib/puter";
-import { useEffect } from "react";
+import { getUser } from "~/lib/session.server";
+import { redirect } from "react-router";
+
+export async function loader({ request }: { request: Request }) {
+  const user = await getUser(request);
+  if (!user) {
+    const url = new URL(request.url);
+    throw redirect(`/login?next=${encodeURIComponent(url.pathname)}`);
+  }
+  return { user };
+}
 
 export default function LayoutRoute() {
-  const { auth } = usePuterStore();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!auth.isAuthenticated) navigate('/auth?next=/');
-  }, [auth.isAuthenticated, navigate]);
-
-  if (!auth.isAuthenticated) return null;
+  const { user } = useLoaderData<typeof loader>();
 
   return (
-    <AppLayout>
-      <Outlet />
+    <AppLayout user={user}>
+      <Outlet context={{ user }} />
     </AppLayout>
   );
 }

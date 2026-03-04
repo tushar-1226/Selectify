@@ -1,18 +1,21 @@
-import { type FormEvent, useState, useEffect } from 'react'
+import { type FormEvent, useState } from 'react'
 import FileUploader from "~/components/FileUploader";
-import { usePuterStore } from "~/lib/puter";
 import { useNavigate } from "react-router";
-import { convertPdfToImage } from "~/lib/pdf2img";
 import { generateUUID } from "~/lib/utils";
-import { prepareInstructions, AIResponseFormat } from "../../constants";
 import LoadingSpinner from "~/components/LoadingSpinner";
 import type { Route } from "./+types/upload";
+import { requireAuth } from "~/lib/session.server";
 
 export function meta({ }: Route.MetaArgs) {
     return [
         { title: "Selectify | Upload" },
         { name: "description", content: "Upload your resume for AI-powered feedback" },
     ];
+}
+
+export async function loader({ request }: { request: Request }) {
+    await requireAuth(request);
+    return {};
 }
 
 // Extract text from PDF file
@@ -35,7 +38,6 @@ async function extractTextFromPdf(file: File): Promise<string> {
 }
 
 const Upload = () => {
-    const { auth, isLoading, fs, ai, kv } = usePuterStore();
     const navigate = useNavigate();
     const [isProcessing, setIsProcessing] = useState(false);
     const [statusText, setStatusText] = useState('');
@@ -49,75 +51,50 @@ const Upload = () => {
         setIsProcessing(true);
 
         try {
-            setStatusText('Uploading the file...');
-            const uploadedFile = await fs.upload([file]);
-            if (!uploadedFile) return setStatusText('Error: Failed to upload file');
-
-            setStatusText('Converting to image...');
-            const imageFile = await convertPdfToImage(file);
-            console.error("PDF Conversion Output:", imageFile);
-            if (!imageFile.file) return setStatusText('Error: ' + (imageFile.error || 'Failed to convert PDF to image'));
-
-            setStatusText('Uploading the image...');
-            const uploadedImage = await fs.upload([imageFile.file]);
-            if (!uploadedImage) return setStatusText('Error: Failed to upload image');
-
             setStatusText('Extracting resume text...');
             const resumeText = await extractTextFromPdf(file);
 
-            setStatusText('Preparing data...');
+            setStatusText('Analyzing with Gemini AI...');
             const uuid = generateUUID();
-            const data: any = {
-                id: uuid,
-                resumePath: uploadedFile.path,
-                imagePath: uploadedImage.path,
-                resumeText,
-                companyName, jobTitle, jobDescription,
-                feedback: '',
-                geminiAnalysis: null,
+
+            const formData = new FormData();
+            formData.append('resumeText', resumeText);
+            formData.append('jobDescription', jobDescription);
+
+            const geminiResponse = await fetch('/api/analyze', {
+                method: 'POST',
+                body: formData
+            });
+
+            if (!geminiResponse.ok) {
+                throw new Error('Analysis failed');
             }
-            await kv.set(`resume:${uuid}`, JSON.stringify(data));
 
-            setStatusText('Analyzing with Puter AI...');
+            const geminiData = await geminiResponse.json();
 
-            const feedback = await ai.feedback(
-                uploadedFile.path,
-                prepareInstructions({ jobTitle, jobDescription, AIResponseFormat })
-            )
-            if (!feedback) return setStatusText('Error: Failed to analyze resume');
-
-            const feedbackText = typeof feedback.message.content === 'string'
-                ? feedback.message.content
-                : feedback.message.content[0]?.text || '';
-
-            data.feedback = JSON.parse(feedbackText);
-
-            // Also analyze with Gemini API
-            setStatusText('Running Gemini AI analysis...');
-            try {
-                const formData = new FormData();
-                formData.append('resumeText', resumeText);
-                formData.append('jobDescription', jobDescription);
-
-                const geminiResponse = await fetch('/api/analyze', {
+            if (geminiData.success) {
+                // Save to database via API
+                const saveResponse = await fetch('/api/analyze', {
                     method: 'POST',
-                    body: formData
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        intent: 'save',
+                        resumeText,
+                        analysisData: geminiData.data,
+                        companyName,
+                        jobTitle,
+                        jobDescription,
+                    }),
                 });
 
-                if (geminiResponse.ok) {
-                    const geminiData = await geminiResponse.json();
-                    if (geminiData.success) {
-                        data.geminiAnalysis = geminiData.data;
-                    }
-                }
-            } catch (error) {
-                console.warn('Gemini analysis failed:', error);
-                // Continue without Gemini analysis
-            }
+                const saveResult = await saveResponse.json();
+                const analysisId = saveResult.id || uuid;
 
-            await kv.set(`resume:${uuid}`, JSON.stringify(data));
-            setStatusText('Analysis complete, redirecting...');
-            navigate(`/analysis?id=${uuid}`);
+                setStatusText('Analysis complete, redirecting...');
+                navigate(`/analysis?id=${analysisId}`);
+            } else {
+                setStatusText('Error: Analysis returned no data');
+            }
         } catch (error) {
             console.error('Error during analysis:', error);
             setStatusText(`Error: ${error instanceof Error ? error.message : 'Unknown error'}`);
@@ -168,35 +145,35 @@ const Upload = () => {
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 w-full">
                             <div className="form-div">
                                 <label htmlFor="company-name" className="text-sm font-semibold text-slate-300 mb-2">Target Company</label>
-                                <input 
-                                    type="text" 
-                                    name="company-name" 
+                                <input
+                                    type="text"
+                                    name="company-name"
                                     className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/50 transition-all"
-                                    placeholder="e.g., Google, Stripe, Notion" 
+                                    placeholder="e.g., Google, Stripe, Notion"
                                     id="company-name"
                                     required
                                 />
                             </div>
                             <div className="form-div">
                                 <label htmlFor="job-title" className="text-sm font-semibold text-slate-300 mb-2">Job Title</label>
-                                <input 
-                                    type="text" 
-                                    name="job-title" 
+                                <input
+                                    type="text"
+                                    name="job-title"
                                     className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/50 transition-all"
-                                    placeholder="e.g., Senior Frontend Engineer" 
+                                    placeholder="e.g., Senior Frontend Engineer"
                                     id="job-title"
                                     required
                                 />
                             </div>
                         </div>
-                        
+
                         <div className="form-div w-full">
                             <label htmlFor="job-description" className="text-sm font-semibold text-slate-300 mb-2">Job Description</label>
-                            <textarea 
-                                rows={6} 
-                                name="job-description" 
+                            <textarea
+                                rows={6}
+                                name="job-description"
                                 className="w-full bg-slate-900/50 border border-slate-700/50 rounded-xl px-4 py-3 text-white placeholder-slate-500 focus:outline-none focus:border-sky-500/50 focus:ring-1 focus:ring-sky-500/50 transition-all resize-none"
-                                placeholder="Paste the full job description or responsibilities here..." 
+                                placeholder="Paste the full job description or responsibilities here..."
                                 id="job-description"
                                 required
                             />
@@ -208,8 +185,8 @@ const Upload = () => {
                         </div>
 
                         <div className="pt-6 mt-4 border-t border-slate-800 flex justify-end w-full">
-                            <button 
-                                className="bg-sky-500 text-white px-8 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 hover:bg-sky-600 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto group" 
+                            <button
+                                className="bg-sky-500 text-white px-8 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 hover:bg-sky-600 disabled:opacity-50 disabled:cursor-not-allowed w-full sm:w-auto group"
                                 type="submit"
                                 disabled={!file}
                             >

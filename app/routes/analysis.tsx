@@ -1,7 +1,8 @@
 import type { Route } from "./+types/home";
 import { Link, useSearchParams } from "react-router";
-import { useState, useEffect } from "react";
-import { usePuterStore } from "~/lib/puter";
+import { useState } from "react";
+import { requireAuth } from "~/lib/session.server";
+import { prisma } from "~/lib/db.server";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -33,68 +34,37 @@ interface AnalysisData {
   };
 }
 
-export default function Analysis() {
-  const [searchParams] = useSearchParams();
-  const { kv } = usePuterStore();
-  const [analysisData, setAnalysisData] = useState<AnalysisData | null>(null);
-  const [loading, setLoading] = useState(true);
+export async function loader({ request }: { request: Request }) {
+  const userId = await requireAuth(request);
+  const url = new URL(request.url);
+  const id = url.searchParams.get("id");
 
-  const resumeId = searchParams.get("id");
-
-  useEffect(() => {
-    const loadAnalysis = async () => {
-      if (!resumeId || !kv) {
-        setLoading(false);
-        return;
-      }
-
-      try {
-        const resumeData = await kv.get(`resume:${resumeId}`);
-        if (resumeData && typeof resumeData === 'string') {
-          const parsed = JSON.parse(resumeData);
-          if (parsed.geminiAnalysis) {
-            setAnalysisData(parsed.geminiAnalysis);
-          } else {
-            // Fallback data
-            setAnalysisData({
-              analysis: {
-                atsScore: 78,
-                matchPercentage: 78,
-                strengths: ["Strong technical foundation", "Relevant experience"],
-                weaknesses: ["Missing specific keywords", "Limited metrics"],
-                keywords: ["React", "Node.js", "AWS"],
-                improvements: ["Add quantified achievements", "Include more technical keywords"],
-                summary: "Good match overall"
-              },
-              insights: [],
-              resumeInfo: { fullName: "User", currentRole: "Engineer", skills: [] }
-            });
-          }
-        }
-      } catch (error) {
-        console.error("Error loading analysis:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadAnalysis();
-  }, [resumeId, kv]);
-
-  if (loading) {
-    return (
-      <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto flex items-center justify-center min-h-screen">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-500 mx-auto mb-4"></div>
-          <p className="text-slate-400">Loading analysis...</p>
-        </div>
-      </main>
-    );
+  if (!id) {
+    return { analysisData: null };
   }
+
+  const record = await prisma.resumeAnalysis.findFirst({
+    where: { id, userId },
+  });
+
+  if (!record) {
+    return { analysisData: null };
+  }
+
+  try {
+    const parsed = JSON.parse(record.analysisData);
+    return { analysisData: parsed as AnalysisData };
+  } catch {
+    return { analysisData: null };
+  }
+}
+
+export default function Analysis({ loaderData }: Route.ComponentProps) {
+  const analysisData = (loaderData as any)?.analysisData as AnalysisData | null;
 
   if (!analysisData) {
     return (
-      <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto">
+      <main className="pt-32 pb-20 px-6 max-w-7xl mx-auto flex items-center justify-center min-h-[80vh]">
         <div className="text-center">
           <p className="text-slate-400 mb-6">No analysis data available</p>
           <Link to="/upload" className="text-sky-400 hover:text-sky-300">

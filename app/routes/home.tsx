@@ -78,6 +78,52 @@ export default function Home() {
         </div>
       </div>
 
+      {/* Practice Hub Stats */}
+      <div className="mb-24">
+        <div className="flex items-center justify-between mb-10">
+          <h2 className="text-2xl font-bold">Interview Practice Hub</h2>
+          <div className="h-px flex-1 bg-slate-800 mx-8 hidden md:block"></div>
+        </div>
+        <div className="grid md:grid-cols-3 gap-6">
+          <Link to="/dsa-practice" className="block">
+            <div className="glass p-8 rounded-3xl group cursor-pointer hover:border-primary/50 transition-all duration-300">
+              <div className="w-12 h-12 bg-emerald-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <span className="material-symbols-outlined text-emerald-400">code</span>
+              </div>
+              <h3 className="text-xl font-bold mb-2">DSA Practice</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">LeetCode-style problems with AI code review, goal tracking, and completion reports.</p>
+              <p className="text-primary text-sm font-semibold mt-4 flex items-center gap-1 group-hover:gap-2 transition-all">
+                Start Practicing <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              </p>
+            </div>
+          </Link>
+          <Link to="/mock-interview" className="block">
+            <div className="glass p-8 rounded-3xl group cursor-pointer hover:border-primary/50 transition-all duration-300">
+              <div className="w-12 h-12 bg-purple-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <span className="material-symbols-outlined text-purple-400">mic</span>
+              </div>
+              <h3 className="text-xl font-bold mb-2">Mock Interviews</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">Timed interview sessions with real-time AI scoring, feedback, and session reports.</p>
+              <p className="text-primary text-sm font-semibold mt-4 flex items-center gap-1 group-hover:gap-2 transition-all">
+                Start Session <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              </p>
+            </div>
+          </Link>
+          <Link to="/interview-prep" className="block">
+            <div className="glass p-8 rounded-3xl group cursor-pointer hover:border-primary/50 transition-all duration-300">
+              <div className="w-12 h-12 bg-amber-500/20 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
+                <span className="material-symbols-outlined text-amber-400">psychology_alt</span>
+              </div>
+              <h3 className="text-xl font-bold mb-2">Interview Q&A</h3>
+              <p className="text-slate-400 text-sm leading-relaxed">AI-generated interview questions tailored to your resume and target role.</p>
+              <p className="text-primary text-sm font-semibold mt-4 flex items-center gap-1 group-hover:gap-2 transition-all">
+                Generate Questions <span className="material-symbols-outlined text-sm">arrow_forward</span>
+              </p>
+            </div>
+          </Link>
+        </div>
+      </div>
+
       <div>
         <div className="flex items-center justify-between mb-10">
           <h2 className="text-2xl font-bold">Recent Analysis</h2>

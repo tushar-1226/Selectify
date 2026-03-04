@@ -1,14 +1,18 @@
-import { usePuterStore } from "~/lib/puter";
-import { useNavigate } from "react-router";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import type { Route } from "./+types/resume-editor";
 import ScoreGauge from "~/components/ScoreGauge";
+import { requireAuth } from "~/lib/session.server";
 
 export function meta({ }: Route.MetaArgs) {
     return [
         { title: "Selectify | Resume Editor" },
         { name: "description", content: "Edit your resume with real-time AI feedback" },
     ];
+}
+
+export async function loader({ request }: { request: Request }) {
+    await requireAuth(request);
+    return {};
 }
 
 const defaultResumeText = `John Doe
@@ -38,24 +42,15 @@ JavaScript, TypeScript, React, Node.js, HTML, CSS, Git
 `;
 
 const ResumeEditor = () => {
-    const { auth, isLoading, ai } = usePuterStore();
-    const navigate = useNavigate();
     const [resumeText, setResumeText] = useState(defaultResumeText);
-    const [score, setScore] = useState(74); // Mock score starting
+    const [score, setScore] = useState(74);
     const [isAnalyzing, setIsAnalyzing] = useState(false);
-
-    useEffect(() => {
-        if (!isLoading && !auth.isAuthenticated) {
-            navigate('/auth?next=/resume-editor');
-        }
-    }, [isLoading, auth.isAuthenticated, navigate]);
 
     // Simple auto-save/mock analysis simulation
     useEffect(() => {
         const analyzeTimer = setTimeout(() => {
             setIsAnalyzing(true);
             setTimeout(() => {
-                // Simulate score fluctuation based on text length to feel "real-time"
                 const boost = Math.min(20, Math.floor(resumeText.length / 100));
                 setScore(Math.min(99, 60 + boost));
                 setIsAnalyzing(false);
@@ -73,7 +68,7 @@ const ResumeEditor = () => {
             </div>
 
             <div className="flex-1 grid grid-cols-1 lg:grid-cols-3 gap-6 animate-in fade-in slide-in-from-bottom-8 duration-700 delay-150 h-full">
-                
+
                 {/* Editor Pane */}
                 <div className="lg:col-span-2 glass-panel p-6 flex flex-col !h-[70vh]">
                     <div className="flex items-center justify-between mb-4">
@@ -85,7 +80,7 @@ const ResumeEditor = () => {
                              </span>
                         </div>
                     </div>
-                    <textarea 
+                    <textarea
                         className="flex-1 w-full bg-dark-surface/50 border border-glass-border rounded-xl p-4 text-text-primary placeholder:text-text-tertiary font-mono text-sm focus:outline-none focus:ring-2 focus:ring-neon-blue/50 resize-none transition-shadow"
                         value={resumeText}
                         onChange={(e) => setResumeText(e.target.value)}
@@ -96,7 +91,7 @@ const ResumeEditor = () => {
 
                 {/* Score & Feedback Pane */}
                 <div className="glass-panel p-6 flex flex-col gap-8 !h-[70vh] overflow-y-auto custom-scrollbar">
-                    
+
                     <div>
                         <h3 className="text-xl font-bold text-text-primary mb-6">Real-Time Score</h3>
                         <div className="flex justify-center bg-dark-surface p-6 rounded-2xl border border-glass-border">

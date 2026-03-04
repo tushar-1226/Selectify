@@ -2,11 +2,16 @@ import type { ReactNode } from "react";
 import Navbar from "./Navbar";
 import AnimatedBackground from "./AnimatedBackground";
 
-export default function AppLayout({ children }: { children: ReactNode }) {
+interface AppLayoutProps {
+  children: ReactNode;
+  user: { id: string; email: string; name: string | null; createdAt: Date };
+}
+
+export default function AppLayout({ children, user }: AppLayoutProps) {
   return (
     <div className="flex flex-col min-h-screen w-full relative bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
       <AnimatedBackground />
-      <Navbar />
+      <Navbar user={user} />
       <main className="flex-1 relative z-10">
         {children}
       </main>

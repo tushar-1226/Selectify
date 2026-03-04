@@ -1,48 +1,37 @@
-import {Link, useParams} from "react-router";
-import {useEffect, useState} from "react";
-import {usePuterStore} from "~/lib/puter";
+import { Link, useParams } from "react-router";
 import Summary from "~/components/Summary";
 import ATS from "~/components/ATS";
 import Details from "~/components/Details";
+import { requireAuth } from "~/lib/session.server";
+import { prisma } from "~/lib/db.server";
+import type { Route } from "./+types/resume";
 
 export const meta = () => ([
     { title: 'Selectify | Review' },
     { name: 'description', content: 'Detailed overview of your resume' },
 ])
 
-const Resume = () => {
-    const { fs, kv } = usePuterStore();
-    const { id } = useParams();
-    const [imageUrl, setImageUrl] = useState('');
-    const [resumeUrl, setResumeUrl] = useState('');
-    const [feedback, setFeedback] = useState<Feedback | null>(null);
+export async function loader({ request, params }: { request: Request; params: { id: string } }) {
+    const userId = await requireAuth(request);
 
-    useEffect(() => {
-        const loadResume = async () => {
-            const resume = await kv.get(`resume:${id}`);
+    const record = await prisma.resumeAnalysis.findFirst({
+        where: { id: params.id, userId },
+    });
 
-            if(!resume) return;
+    if (!record) {
+        return { feedback: null };
+    }
 
-            const data = JSON.parse(resume);
+    try {
+        const parsed = JSON.parse(record.analysisData);
+        return { feedback: parsed?.feedback || null };
+    } catch {
+        return { feedback: null };
+    }
+}
 
-            const resumeBlob = await fs.read(data.resumePath);
-            if(!resumeBlob) return;
-
-            const pdfBlob = new Blob([resumeBlob], { type: 'application/pdf' });
-            const resumeUrl = URL.createObjectURL(pdfBlob);
-            setResumeUrl(resumeUrl);
-
-            const imageBlob = await fs.read(data.imagePath);
-            if(!imageBlob) return;
-            const imageUrl = URL.createObjectURL(imageBlob);
-            setImageUrl(imageUrl);
-
-            setFeedback(data.feedback);
-            console.log({resumeUrl, imageUrl, feedback: data.feedback });
-        }
-
-        loadResume();
-    }, [id]);
+const Resume = ({ loaderData }: Route.ComponentProps) => {
+    const feedback = (loaderData as any)?.feedback as Feedback | null;
 
     return (
         <div className="pb-10 min-h-screen">
@@ -56,17 +45,9 @@ const Resume = () => {
             </div>
             <div className="flex flex-col lg:flex-row w-full gap-8">
                 <section className="w-full lg:w-[45%] xl:w-2/5 h-[85vh] lg:sticky lg:top-8 flex items-center justify-center">
-                    {imageUrl && resumeUrl && (
-                        <div className="animate-in fade-in duration-1000 glass-panel w-full h-full p-2 flex items-center justify-center">
-                            <a href={resumeUrl} target="_blank" rel="noopener noreferrer" className="w-full h-full block">
-                                <img
-                                    src={imageUrl}
-                                    className="w-full h-full object-contain rounded-xl"
-                                    title="resume"
-                                />
-                            </a>
-                        </div>
-                    )}
+                    <div className="glass-panel w-full h-full p-6 flex items-center justify-center">
+                        <p className="text-text-secondary text-sm">Resume preview is available after re-uploading.</p>
+                    </div>
                 </section>
                 <section className="w-full lg:w-[55%] xl:w-3/5 flex flex-col gap-8">
                     <h2 className="text-4xl text-text-primary font-bold tracking-tight">Application Analysis</h2>
@@ -78,8 +59,8 @@ const Resume = () => {
                         </div>
                     ) : (
                         <div className="flex flex-col items-center justify-center h-64 glass-panel">
-                             <div className="w-16 h-16 border-4 border-glass-border border-t-neon-blue rounded-full animate-spin mb-4"></div>
-                             <p className="text-text-secondary font-medium tracking-wide pulse-glow">Loading Analysis...</p>
+                            <p className="text-text-secondary font-medium">No analysis data found.</p>
+                            <Link to="/upload" className="text-neon-blue hover:underline mt-4 text-sm">Upload a resume →</Link>
                         </div>
                     )}
                 </section>
