@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link, useFetcher } from "react-router";
 import { dsaProblems, dsaCategories } from "../../constants/dsa-problems";
-import { requireAuth } from "~/lib/session.server";
-import { prisma } from "~/lib/db.server";
+import { requireAuth, getCookie } from "~/lib/session.server";
 import type { Route } from "./+types/dsa-practice";
 
 export function meta({}: Route.MetaArgs) {
@@ -13,24 +12,38 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({ request }: { request: Request }) {
-  const userId = await requireAuth(request);
+  await requireAuth(request);
+  const token = getCookie(request, "token");
 
-  const [progressRows, goals] = await Promise.all([
-    prisma.dSAProgress.findMany({ where: { userId } }),
-    prisma.dSAGoal.findMany({ where: { userId }, orderBy: { createdAt: "desc" } }),
+  // Fetch progress and goals from Python backend
+  const [progressRes, goalsRes] = await Promise.all([
+    fetch("http://localhost:4000/api/dsa/progress", {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
+    fetch("http://localhost:4000/api/dsa/goals", {
+      headers: { Authorization: `Bearer ${token}` },
+    }),
   ]);
 
-  // Convert progress rows to a map
-  const progressMap: Record<string, { status: string; isCorrect: boolean }> = {};
-  for (const p of progressRows) {
-    progressMap[p.problemId] = { status: p.status, isCorrect: p.isCorrect };
+  let progressMap: Record<string, { status: string; isCorrect: boolean }> = {};
+  let goals: Array<{ id: string; title: string; category: string | null; difficulty: string | null; targetCount: number }> = [];
+
+  if (progressRes.ok) {
+    const data = await progressRes.json();
+    progressMap = data.progressMap || {};
+  }
+
+  if (goalsRes.ok) {
+    const data = await goalsRes.json();
+    goals = data.goals || [];
   }
 
   return { progressMap, goals };
 }
 
 export async function action({ request }: { request: Request }) {
-  const userId = await requireAuth(request);
+  await requireAuth(request);
+  const token = getCookie(request, "token");
   const formData = await request.formData();
   const intent = formData.get("intent") as string;
 
@@ -42,21 +55,23 @@ export async function action({ request }: { request: Request }) {
 
     if (!title) return Response.json({ error: "Title is required" }, { status: 400 });
 
-    await prisma.dSAGoal.create({
-      data: {
-        userId,
-        title,
-        targetCount,
-        category: category === "All" ? null : category,
-        difficulty: difficulty === "All" ? null : difficulty,
+    await fetch("http://localhost:4000/api/dsa/goals", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
       },
+      body: JSON.stringify({ title, targetCount, category, difficulty }),
     });
     return Response.json({ success: true });
   }
 
   if (intent === "deleteGoal") {
     const goalId = formData.get("goalId") as string;
-    await prisma.dSAGoal.delete({ where: { id: goalId } });
+    await fetch(`http://localhost:4000/api/dsa/goals/${goalId}`, {
+      method: "DELETE",
+      headers: { Authorization: `Bearer ${token}` },
+    });
     return Response.json({ success: true });
   }
 

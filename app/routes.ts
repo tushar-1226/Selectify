@@ -15,6 +15,7 @@ export default [
         route("/dsa-report", "routes/dsa-report.tsx"),
         route("/mock-interview", "routes/mock-interview.tsx"),
         route("/mock-session", "routes/mock-session.tsx"),
+        route("/profile", "routes/profile.tsx"),
     ]),
     route("/login", "routes/login.tsx"),
     route("/register", "routes/register.tsx"),

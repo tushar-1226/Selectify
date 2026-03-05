@@ -22,7 +22,11 @@ export async function action({ request }: { request: Request }) {
     return Response.json({ error: result.error }, { status: 400 });
   }
 
-  return createUserSession(result.user!.id, next);
+  // Expect result.token from backend
+  if (!result.token) {
+    return Response.json({ error: "No token returned from backend." }, { status: 500 });
+  }
+  return createUserSession(result.token, next);
 }
 
 export default function Login() {

@@ -1,33 +1,12 @@
-import { Link, useParams } from "react-router";
-import Summary from "~/components/Summary";
-import ATS from "~/components/ATS";
-import Details from "~/components/Details";
-import { requireAuth } from "~/lib/session.server";
-import { prisma } from "~/lib/db.server";
-import type { Route } from "./+types/resume";
-
+// ...existing code...
 export const meta = () => ([
     { title: 'Selectify | Review' },
     { name: 'description', content: 'Detailed overview of your resume' },
 ])
 
 export async function loader({ request, params }: { request: Request; params: { id: string } }) {
-    const userId = await requireAuth(request);
-
-    const record = await prisma.resumeAnalysis.findFirst({
-        where: { id: params.id, userId },
-    });
-
-    if (!record) {
-        return { feedback: null };
-    }
-
-    try {
-        const parsed = JSON.parse(record.analysisData);
-        return { feedback: parsed?.feedback || null };
-    } catch {
-        return { feedback: null };
-    }
+    // Implement backend logic to load resume feedback here
+    return { feedback: null };
 }
 
 const Resume = ({ loaderData }: Route.ComponentProps) => {

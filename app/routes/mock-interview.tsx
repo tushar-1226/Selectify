@@ -1,7 +1,6 @@
 import { useState } from "react";
 import { useNavigate, Link } from "react-router";
-import { requireAuth } from "~/lib/session.server";
-import { prisma } from "~/lib/db.server";
+import { requireAuth, getCookie } from "~/lib/session.server";
 import type { Route } from "./+types/mock-interview";
 
 export function meta({}: Route.MetaArgs) {
@@ -12,22 +11,26 @@ export function meta({}: Route.MetaArgs) {
 }
 
 export async function loader({ request }: { request: Request }) {
-  const userId = await requireAuth(request);
+  await requireAuth(request);
+  const token = getCookie(request, "token");
 
-  const sessions = await prisma.mockSession.findMany({
-    where: { userId, completedAt: { not: null } },
-    orderBy: { startedAt: "desc" },
-    take: 10,
+  const res = await fetch("http://localhost:4000/api/mock-interviews", {
+    headers: { Authorization: `Bearer ${token}` },
   });
 
-  const history = sessions.map((s) => ({
-    id: s.id,
-    type: s.type,
-    difficulty: s.difficulty,
-    overallScore: s.overallScore,
-    startedAt: s.startedAt.toISOString(),
-    completedAt: s.completedAt?.toISOString(),
-  }));
+  let history: Array<{
+    id: number;
+    type: string;
+    difficulty: string;
+    overallScore: number | null;
+    startedAt: string;
+    completedAt: string | null;
+  }> = [];
+
+  if (res.ok) {
+    const data = await res.json();
+    history = data.history || [];
+  }
 
   return { history };
 }

@@ -1,8 +1,7 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import { useNavigate, useSearchParams, useFetcher } from "react-router";
 import LoadingSpinner from "~/components/LoadingSpinner";
-import { requireAuth } from "~/lib/session.server";
-import { prisma } from "~/lib/db.server";
+import { requireAuth, getCookie } from "~/lib/session.server";
 import type { Route } from "./+types/mock-session";
 
 export function meta({}: Route.MetaArgs) {
@@ -18,7 +17,8 @@ export async function loader({ request }: { request: Request }) {
 }
 
 export async function action({ request }: { request: Request }) {
-  const userId = await requireAuth(request);
+  await requireAuth(request);
+  const token = getCookie(request, "token");
   const formData = await request.formData();
   const intent = formData.get("intent") as string;
 
@@ -31,9 +31,13 @@ export async function action({ request }: { request: Request }) {
     const answersData = formData.get("answersData") as string;
     const evaluationsData = formData.get("evaluationsData") as string;
 
-    await prisma.mockSession.create({
-      data: {
-        userId,
+    await fetch("http://localhost:4000/api/mock-interviews", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
         type,
         difficulty,
         targetRole,
@@ -41,8 +45,7 @@ export async function action({ request }: { request: Request }) {
         questionsData,
         answersData,
         evaluationsData,
-        completedAt: new Date(),
-      },
+      }),
     });
 
     return Response.json({ success: true });

@@ -1,47 +1,76 @@
-import { createCookieSessionStorage, redirect } from "react-router";
-import bcrypt from "bcryptjs";
-import { prisma } from "./db.server";
+import { redirect } from "react-router";
 
-// Cookie session storage
-const sessionStorage = createCookieSessionStorage({
-  cookie: {
-    name: "__selectify_session",
-    httpOnly: true,
-    maxAge: 60 * 60 * 24 * 30, // 30 days
-    path: "/",
-    sameSite: "lax",
-    secrets: [process.env.SESSION_SECRET || "s3cr3t-d3f4ult-k3y-ch4ng3-m3"],
-    secure: process.env.NODE_ENV === "production",
-  },
-});
-
-// Get the session from the request
-export async function getSession(request: Request) {
-  const cookie = request.headers.get("Cookie");
-  return sessionStorage.getSession(cookie);
+function setCookie(res: Response, name: string, value: string, options: Record<string, any> = {}) {
+  let cookie = `${name}=${encodeURIComponent(value)}`;
+  if (options.maxAge) cookie += `; Max-Age=${options.maxAge}`;
+  if (options.path) cookie += `; Path=${options.path}`;
+  if (options.httpOnly) cookie += `; HttpOnly`;
+  if (options.sameSite) cookie += `; SameSite=${options.sameSite}`;
+  if (options.secure) cookie += `; Secure`;
+  res.headers.append('Set-Cookie', cookie);
 }
 
-// Get the currently logged-in user ID from the session
-export async function getUserId(request: Request): Promise<string | null> {
-  const session = await getSession(request);
-  const userId = session.get("userId");
-  return userId || null;
+export function getCookie(req: Request, name: string): string | null {
+  const cookie = req.headers.get('cookie');
+  if (!cookie) return null;
+  const match = cookie.match(new RegExp(`${name}=([^;]+)`));
+  return match ? decodeURIComponent(match[1]) : null;
 }
-
-// Get the currently logged-in user object
-export async function getUser(request: Request) {
-  const userId = await getUserId(request);
-  if (!userId) return null;
-
+function verifyJWT(token: string): any {
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: { id: true, email: true, name: true, createdAt: true },
-    });
-    return user;
+    const base64Url = token.split('.')[1];
+    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+    const jsonPayload = decodeURIComponent(
+      atob(base64)
+        .split('')
+        .map((c) => '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2))
+        .join('')
+    );
+    return JSON.parse(jsonPayload);
   } catch {
     return null;
   }
+}
+// Stub for createUserSession to allow registration/login to proceed
+export async function createUserSession(userId: string, redirectTo: string) {
+  // Set JWT cookie and redirect
+  const url = redirectTo.startsWith("http")
+    ? redirectTo
+    : (redirectTo.startsWith("/") ? redirectTo : "/" + redirectTo);
+  
+  let cookie = `token=${encodeURIComponent(userId)}; Path=/; HttpOnly; SameSite=Lax; Max-Age=${60 * 60 * 24 * 7}`;
+  return new Response(null, {
+    status: 302,
+    headers: {
+      Location: url,
+      'Set-Cookie': cookie,
+    },
+  });
+}
+// Prisma removed. Stub session and user functions for future backend logic.
+
+export async function getSession(request: Request) {
+  // Get JWT cookie
+  const token = getCookie(request, 'token');
+  if (!token) return {};
+  const payload = verifyJWT(token);
+  return { user: payload };
+}
+
+export async function getUserId(request: Request): Promise<string | null> {
+  // Get userId from JWT cookie
+  const token = getCookie(request, 'token');
+  if (!token) return null;
+  const payload = verifyJWT(token);
+  return payload?.id || null;
+}
+
+export async function getUser(request: Request) {
+  // Return user object from JWT
+  const token = getCookie(request, 'token');
+  if (!token) return null;
+  const payload = verifyJWT(token);
+  return payload || null;
 }
 
 // Require authentication — redirects to /login if not logged in
@@ -56,52 +85,32 @@ export async function requireAuth(request: Request) {
 
 // Register a new user
 export async function registerUser(email: string, password: string, name?: string) {
-  const existingUser = await prisma.user.findUnique({ where: { email } });
-  if (existingUser) {
-    return { error: "A user with this email already exists." };
-  }
-
-  const passwordHash = await bcrypt.hash(password, 10);
-  const user = await prisma.user.create({
-    data: { email, passwordHash, name },
+  // Call Python backend REST API for registration
+  const res = await fetch("http://localhost:4000/api/register", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password, name }),
   });
-
-  return { user };
+  if (!res.ok) {
+    const errorData = await res.json();
+    return { success: false, error: errorData.detail || "Registration failed" };
+  }
+  // Backend returns { success, token, user }
+  return await res.json();
 }
 
 // Login an existing user
 export async function loginUser(email: string, password: string) {
-  const user = await prisma.user.findUnique({ where: { email } });
-  if (!user) {
-    return { error: "Invalid email or password." };
-  }
-
-  const isValid = await bcrypt.compare(password, user.passwordHash);
-  if (!isValid) {
-    return { error: "Invalid email or password." };
-  }
-
-  return { user };
-}
-
-// Create a user session (set cookie) and redirect
-export async function createUserSession(userId: string, redirectTo: string) {
-  const session = await sessionStorage.getSession();
-  session.set("userId", userId);
-
-  return redirect(redirectTo, {
-    headers: {
-      "Set-Cookie": await sessionStorage.commitSession(session),
-    },
+  // Call Python backend REST API for login
+  const res = await fetch("http://localhost:4000/api/login", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email, password }),
   });
-}
-
-// Logout — destroy the session
-export async function logout(request: Request) {
-  const session = await getSession(request);
-  return redirect("/login", {
-    headers: {
-      "Set-Cookie": await sessionStorage.destroySession(session),
-    },
-  });
+  if (!res.ok) {
+    const errorData = await res.json();
+    return { success: false, error: errorData.detail || "Login failed" };
+  }
+  // Backend returns { success, token, user }
+  return await res.json();
 }

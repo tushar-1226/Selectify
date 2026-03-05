@@ -3,8 +3,7 @@ import { useNavigate, useParams, useFetcher } from "react-router";
 import { dsaProblems } from "../../constants/dsa-problems";
 import Editor from "@monaco-editor/react";
 import LoadingSpinner from "~/components/LoadingSpinner";
-import { requireAuth } from "~/lib/session.server";
-import { prisma } from "~/lib/db.server";
+import { requireAuth, getCookie } from "~/lib/session.server";
 import type { Route } from "./+types/dsa-problem.$id";
 
 export function meta({ params }: Route.MetaArgs) {
@@ -16,15 +15,27 @@ export function meta({ params }: Route.MetaArgs) {
 }
 
 export async function loader({ request, params }: { request: Request; params: { id: string } }) {
-  const userId = await requireAuth(request);
-  const progress = await prisma.dSAProgress.findUnique({
-    where: { userId_problemId: { userId, problemId: params.id } },
+  await requireAuth(request);
+  const token = getCookie(request, "token");
+
+  // Fetch from Python backend
+  const res = await fetch("http://localhost:4000/api/dsa/progress", {
+    headers: { Authorization: `Bearer ${token}` },
   });
-  return { previousProgress: progress };
+  
+  let previousProgress = null;
+  if (res.ok) {
+    const data = await res.json();
+    const map = data.progressMap || {};
+    previousProgress = map[params.id] || null;
+  }
+  
+  return { previousProgress };
 }
 
 export async function action({ request, params }: { request: Request; params: { id: string } }) {
-  const userId = await requireAuth(request);
+  await requireAuth(request);
+  const token = getCookie(request, "token");
   const formData = await request.formData();
   const intent = formData.get("intent") as string;
 
@@ -34,10 +45,19 @@ export async function action({ request, params }: { request: Request; params: { 
     const language = formData.get("language") as string;
     const aiReview = formData.get("aiReview") as string;
 
-    await prisma.dSAProgress.upsert({
-      where: { userId_problemId: { userId, problemId: params.id } },
-      update: { status: "solved", isCorrect, submittedCode, language, aiReview, submittedAt: new Date() },
-      create: { userId, problemId: params.id, status: "solved", isCorrect, submittedCode, language, aiReview },
+    await fetch("http://localhost:4000/api/dsa/progress", {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        problemId: params.id,
+        isCorrect,
+        submittedCode,
+        language,
+        aiReview,
+      }),
     });
     return Response.json({ success: true });
   }

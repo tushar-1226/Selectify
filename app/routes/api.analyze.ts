@@ -1,7 +1,6 @@
 import type { Route } from "./+types/api.analyze";
 import { analyzeResume, generateInsights, extractResumeInfo } from "~/lib/gemini";
 import { getUserId } from "~/lib/session.server";
-import { prisma } from "~/lib/db.server";
 
 export async function action({ request }: Route.ActionArgs) {
   if (request.method !== "POST") {
@@ -13,24 +12,8 @@ export async function action({ request }: Route.ActionArgs) {
 
     // JSON body = save intent
     if (contentType.includes("application/json")) {
-      const userId = await getUserId(request);
-      if (!userId) {
-        return Response.json({ error: "Unauthorized" }, { status: 401 });
-      }
-
-      const body = await request.json();
-      if (body.intent === "save") {
-        const record = await prisma.resumeAnalysis.create({
-          data: {
-            userId,
-            resumeText: body.resumeText || "",
-            analysisData: JSON.stringify(body.analysisData || {}),
-          },
-        });
-        return Response.json({ success: true, id: record.id });
-      }
-
-      return Response.json({ error: "Unknown intent" }, { status: 400 });
+      // Implement backend logic for saving resume analysis here
+      return Response.json({ error: "Backend not implemented" }, { status: 501 });
     }
 
     // FormData body = analyze intent
