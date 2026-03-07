@@ -17,10 +17,10 @@ export async function loader({ request }: { request: Request }) {
 
   // Fetch progress and goals from Python backend
   const [progressRes, goalsRes] = await Promise.all([
-    fetch("http://localhost:4000/api/dsa/progress", {
+    fetch("https://selectify-platform-production.up.railway.app/api/dsa/progress", {
       headers: { Authorization: `Bearer ${token}` },
     }),
-    fetch("http://localhost:4000/api/dsa/goals", {
+    fetch("https://selectify-platform-production.up.railway.app/api/dsa/goals", {
       headers: { Authorization: `Bearer ${token}` },
     }),
   ]);
@@ -55,7 +55,7 @@ export async function action({ request }: { request: Request }) {
 
     if (!title) return Response.json({ error: "Title is required" }, { status: 400 });
 
-    await fetch("http://localhost:4000/api/dsa/goals", {
+    await fetch("https://selectify-platform-production.up.railway.app/api/dsa/goals", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
@@ -68,7 +68,7 @@ export async function action({ request }: { request: Request }) {
 
   if (intent === "deleteGoal") {
     const goalId = formData.get("goalId") as string;
-    await fetch(`http://localhost:4000/api/dsa/goals/${goalId}`, {
+    await fetch(`https://selectify-platform-production.up.railway.app/api/dsa/goals/${goalId}`, {
       method: "DELETE",
       headers: { Authorization: `Bearer ${token}` },
     });

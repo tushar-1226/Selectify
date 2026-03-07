@@ -16,10 +16,10 @@ export async function loader({ request }: { request: Request }) {
 
   // Fetch from Python backend
   const [progressRes, goalsRes] = await Promise.all([
-    fetch("http://localhost:4000/api/dsa/progress", {
+    fetch("https://selectify-platform-production.up.railway.app/api/dsa/progress", {
       headers: { Authorization: `Bearer ${token}` },
     }),
-    fetch("http://localhost:4000/api/dsa/goals", {
+    fetch("https://selectify-platform-production.up.railway.app/api/dsa/goals", {
       headers: { Authorization: `Bearer ${token}` },
     }),
   ]);

@@ -86,7 +86,7 @@ export async function requireAuth(request: Request) {
 // Register a new user
 export async function registerUser(email: string, password: string, name?: string) {
   // Call Python backend REST API for registration
-  const res = await fetch("http://localhost:4000/api/register", {
+  const res = await fetch("https://selectify-platform-production.up.railway.app/api/register", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password, name }),
@@ -102,7 +102,7 @@ export async function registerUser(email: string, password: string, name?: strin
 // Login an existing user
 export async function loginUser(email: string, password: string) {
   // Call Python backend REST API for login
-  const res = await fetch("http://localhost:4000/api/login", {
+  const res = await fetch("https://selectify-platform-production.up.railway.app/api/login", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),

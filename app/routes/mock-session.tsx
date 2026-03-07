@@ -31,7 +31,7 @@ export async function action({ request }: { request: Request }) {
     const answersData = formData.get("answersData") as string;
     const evaluationsData = formData.get("evaluationsData") as string;
 
-    await fetch("http://localhost:4000/api/mock-interviews", {
+    await fetch("https://selectify-platform-production.up.railway.app/api/mock-interviews", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,
