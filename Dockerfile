@@ -18,9 +18,6 @@ RUN npm install
 # Copy application code
 COPY . .
 
-# Generate Prisma client
-RUN npx prisma generate
-
 # Build the application
 RUN npm run build
 
@@ -33,9 +30,8 @@ RUN mkdir -p /data
 # Expose the default Fly.io port
 EXPOSE 3000
 
-# Set environment variables for the database script
-ENV DATABASE_URL="file:/data/sqlite.db"
+# Set environment variables
 ENV PORT=3000
 
-# Start script: Push database schema (creates db if it doesn't exist) then start the server
-CMD npx prisma db push --accept-data-loss && npm run start
+# Start script: start the server
+CMD npm run start

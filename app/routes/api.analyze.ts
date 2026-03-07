@@ -1,6 +1,5 @@
 import type { Route } from "./+types/api.analyze";
 import { analyzeResume, generateInsights, extractResumeInfo } from "~/lib/gemini";
-import { getUserId } from "~/lib/session.server";
 
 export async function action({ request }: Route.ActionArgs) {
   if (request.method !== "POST") {

@@ -11,7 +11,6 @@
   "dependencies": {
     "@google/generative-ai": "^0.24.1",
     "@monaco-editor/react": "^4.7.0",
-    "@prisma/client": "^7.4.2",
     "@react-router/node": "7.12.0",
     "@react-router/serve": "7.12.0",
     "bcryptjs": "^3.0.3",
@@ -22,7 +21,6 @@
     "jwt-decode": "^4.0.0",
     "lucide-react": "^0.575.0",
     "pdfjs-dist": "^5.4.530",
-    "prisma": "^7.4.2",
     "react": "^19.2.3",
     "react-dom": "^19.2.3",
     "react-dropzone": "^14.3.8",

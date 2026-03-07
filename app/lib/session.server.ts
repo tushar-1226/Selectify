@@ -114,3 +114,12 @@ export async function loginUser(email: string, password: string) {
   // Backend returns { success, token, user }
   return await res.json();
 }
+
+// Logout a user
+export async function logout(request: Request) {
+  return redirect("/", {
+    headers: {
+      "Set-Cookie": "token=; Path=/; HttpOnly; SameSite=Lax; Max-Age=0",
+    },
+  });
+}

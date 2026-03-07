@@ -2,7 +2,6 @@ import type { Route } from "./+types/home";
 import { Link, useSearchParams } from "react-router";
 import { useState } from "react";
 import { requireAuth } from "~/lib/session.server";
-import { prisma } from "~/lib/db.server";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -43,20 +42,8 @@ export async function loader({ request }: { request: Request }) {
     return { analysisData: null };
   }
 
-  const record = await prisma.resumeAnalysis.findFirst({
-    where: { id, userId },
-  });
-
-  if (!record) {
-    return { analysisData: null };
-  }
-
-  try {
-    const parsed = JSON.parse(record.analysisData);
-    return { analysisData: parsed as AnalysisData };
-  } catch {
-    return { analysisData: null };
-  }
+  // TODO: Fetch analysis data from actual backend
+  return { analysisData: null };
 }
 
 export default function Analysis({ loaderData }: Route.ComponentProps) {
