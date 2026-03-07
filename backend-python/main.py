@@ -341,6 +341,36 @@ def get_analyses(
 
 
 # ---------------------------------------------------------------------------
+# Resume Analysis — Get single by ID (protected)
+# ---------------------------------------------------------------------------
+@app.get("/api/resume-analysis/single/{analysis_id}")
+def get_single_analysis(
+    analysis_id: int,
+    current_user: User = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    # Only allow the user to fetch their own analysis
+    analysis = db.query(ResumeAnalysis).filter(
+        ResumeAnalysis.id == analysis_id, 
+        ResumeAnalysis.user_id == current_user.id
+    ).first()
+    
+    if not analysis:
+        raise HTTPException(status_code=404, detail="Analysis not found")
+        
+    return {
+        "success": True, 
+        "analysis": {
+            "id": analysis.id,
+            "user_id": analysis.user_id,
+            "resume_text": analysis.resume_text,
+            "analysis_data": analysis.analysis_data,
+            "created_at": analysis.created_at.isoformat() if analysis.created_at else None,
+        }
+    }
+
+
+# ---------------------------------------------------------------------------
 # DSA Progress — Get all progress for current user
 # ---------------------------------------------------------------------------
 @app.get("/api/dsa/progress")

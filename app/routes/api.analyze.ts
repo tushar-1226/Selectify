@@ -1,5 +1,6 @@
 import type { Route } from "./+types/api.analyze";
 import { analyzeResume, generateInsights, extractResumeInfo } from "~/lib/gemini";
+import { getCookie, getUserId } from "~/lib/session.server";
 
 export async function action({ request }: Route.ActionArgs) {
   if (request.method !== "POST") {
@@ -11,8 +12,36 @@ export async function action({ request }: Route.ActionArgs) {
 
     // JSON body = save intent
     if (contentType.includes("application/json")) {
-      // Implement backend logic for saving resume analysis here
-      return Response.json({ error: "Backend not implemented" }, { status: 501 });
+      const data = await request.json();
+      
+      const token = getCookie(request, "token");
+      if (!token) {
+        return Response.json({ error: "Unauthorized" }, { status: 401 });
+      }
+
+      const userId = await getUserId(request);
+      
+      const backendResponse = await fetch("https://selectify-platform-production.up.railway.app/api/resume-analysis", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          userId: userId,
+          resumeText: data.resumeText,
+          analysisData: data.analysisData
+        })
+      });
+
+      if (!backendResponse.ok) {
+        const errorData = await backendResponse.json();
+        console.error("Backend error saving analysis:", errorData);
+        return Response.json({ error: "Failed to save analysis to backend" }, { status: backendResponse.status });
+      }
+
+      const backendResult = await backendResponse.json();
+      return Response.json(backendResult);
     }
 
     // FormData body = analyze intent

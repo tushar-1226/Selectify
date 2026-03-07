@@ -1,7 +1,7 @@
 import type { Route } from "./+types/home";
 import { Link, useSearchParams } from "react-router";
 import { useState } from "react";
-import { requireAuth } from "~/lib/session.server";
+import { requireAuth, getCookie } from "~/lib/session.server";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -42,8 +42,46 @@ export async function loader({ request }: { request: Request }) {
     return { analysisData: null };
   }
 
-  // TODO: Fetch analysis data from actual backend
-  return { analysisData: null };
+  const token = getCookie(request, "token");
+  if (!token) {
+    return { analysisData: null };
+  }
+
+  try {
+    const backendResponse = await fetch(`https://selectify-platform-production.up.railway.app/api/resume-analysis/single/${id}`, {
+      method: "GET",
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (!backendResponse.ok) {
+      console.error("Failed to fetch analysis:", backendResponse.statusText);
+      return { analysisData: null };
+    }
+
+    const data = await backendResponse.json();
+    if (!data.success || !data.analysis) {
+      return { analysisData: null };
+    }
+
+    // The backend stores analysis_data as a stringified JSON (by default in ResumeAnalysis model)
+    // or direct JSON. We need to ensure we parse it correctly.
+    let parsedData = data.analysis.analysis_data;
+    if (typeof parsedData === 'string') {
+      try {
+        parsedData = JSON.parse(parsedData);
+      } catch (e) {
+        console.error("Failed to parse analysis data string", e);
+        return { analysisData: null };
+      }
+    }
+
+    return { analysisData: parsedData };
+  } catch (error) {
+    console.error("Error fetching analysis data:", error);
+    return { analysisData: null };
+  }
 }
 
 export default function Analysis({ loaderData }: Route.ComponentProps) {
