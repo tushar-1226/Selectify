@@ -13,7 +13,7 @@ ENV NODE_ENV="production"
 COPY package.json package-lock.json* ./
 
 # Install dependencies (production + dev for build)
-RUN npm install
+RUN npm install --include=dev
 
 # Copy application code
 COPY . .
