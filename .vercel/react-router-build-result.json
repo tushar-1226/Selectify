@@ -24,6 +24,7 @@
       "routes/dsa-report": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/mock-interview": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/mock-session": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
+      "routes/profile": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/login": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/register": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
       "routes/logout": "nodejs_eyJydW50aW1lIjoibm9kZWpzIn0",
@@ -136,6 +137,13 @@
         "parentId": "routes/layout",
         "file": "app/routes/mock-session.tsx",
         "path": "/mock-session",
+        "config": {}
+      },
+      "routes/profile": {
+        "id": "routes/profile",
+        "parentId": "routes/layout",
+        "file": "app/routes/profile.tsx",
+        "path": "/profile",
         "config": {}
       },
       "routes/login": {
@@ -290,6 +298,12 @@
         "file": "routes/mock-session.tsx",
         "path": "/mock-session"
       },
+      "routes/profile": {
+        "id": "routes/profile",
+        "parentId": "routes/layout",
+        "file": "routes/profile.tsx",
+        "path": "/profile"
+      },
       "routes/login": {
         "id": "routes/login",
         "parentId": "root",
@@ -401,6 +415,10 @@
               {
                 "file": "routes/mock-session.tsx",
                 "path": "/mock-session"
+              },
+              {
+                "file": "routes/profile.tsx",
+                "path": "/profile"
               }
             ]
           },
