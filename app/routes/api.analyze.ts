@@ -1,6 +1,7 @@
 import type { Route } from "./+types/api.analyze";
 import { analyzeResume, generateInsights, extractResumeInfo } from "~/lib/gemini";
 import { getCookie, getUserId } from "~/lib/session.server";
+import { BACKEND_URL } from "~/lib/config";
 
 export async function action({ request }: Route.ActionArgs) {
   if (request.method !== "POST") {
@@ -21,7 +22,7 @@ export async function action({ request }: Route.ActionArgs) {
 
       const userId = await getUserId(request);
       
-      const backendResponse = await fetch("https://selectify-platform-production.up.railway.app/api/resume-analysis", {
+      const backendResponse = await fetch(`${BACKEND_URL}/api/resume-analysis`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

@@ -82,6 +82,49 @@ const Navbar = ({ user }: NavbarProps) => {
                             </Link>
                         </div>
                     </div>
+
+                    {/* Tools Dropdown */}
+                    <div className="relative group">
+                        <button className={`flex items-center gap-1 transition-colors py-2 ${
+                            isActive('/cover-letter') || isActive('/linkedin-optimizer') || isActive('/email-templates') || isActive('/ats-checker') || isActive('/salary-insights') || isActive('/courses') || isActive('/resume-versions') || isActive('/portfolio-analyzer') || isActive('/job-board')
+                                ? 'text-sky-400 border-b-2 border-sky-400 pb-0.5'
+                                : 'text-slate-400 hover:text-white'
+                        }`}>
+                            Tools
+                            <svg className="w-4 h-4 opacity-70 group-hover:rotate-180 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                            </svg>
+                        </button>
+                        <div className="absolute top-10 left-0 w-52 rounded-xl bg-slate-900 border border-slate-700 shadow-xl opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden max-h-[70vh] overflow-y-auto">
+                            <Link to="/cover-letter" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors border-b border-slate-700/50">
+                                Cover Letter
+                            </Link>
+                            <Link to="/email-templates" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors border-b border-slate-700/50">
+                                Email Templates
+                            </Link>
+                            <Link to="/ats-checker" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors border-b border-slate-700/50">
+                                ATS Checker
+                            </Link>
+                            <Link to="/linkedin-optimizer" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors border-b border-slate-700/50">
+                                LinkedIn Optimizer
+                            </Link>
+                            <Link to="/salary-insights" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors border-b border-slate-700/50">
+                                Salary Insights
+                            </Link>
+                            <Link to="/courses" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors border-b border-slate-700/50">
+                                Courses
+                            </Link>
+                            <Link to="/resume-versions" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors border-b border-slate-700/50">
+                                Resume Versions
+                            </Link>
+                            <Link to="/portfolio-analyzer" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors border-b border-slate-700/50">
+                                Portfolio Analyzer
+                            </Link>
+                            <Link to="/job-board" className="block px-4 py-3 text-sm text-slate-300 hover:text-white hover:bg-slate-800 transition-colors">
+                                Job Board
+                            </Link>
+                        </div>
+                    </div>
                 </div>
 
                 {/* Right Section */}

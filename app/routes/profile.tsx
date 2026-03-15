@@ -1,6 +1,8 @@
 import { useState, useRef } from "react";
 import { useOutletContext } from "react-router";
 
+const BACKEND_URL = "http://localhost:8000";
+
 export const meta = () => ([
   { title: 'Selectify | Profile Settings' },
   { name: 'description', content: 'Manage your Selectify profile' },
@@ -40,7 +42,7 @@ export default function Profile() {
     const token = getToken();
     if (!token) return;
     try {
-      const res = await fetch("https://selectify-platform-production.up.railway.app/api/profile", {
+      const res = await fetch(`${BACKEND_URL}/api/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
@@ -60,7 +62,7 @@ export default function Profile() {
     const token = getToken();
     if (!token) return;
     try {
-      const res = await fetch("https://selectify-platform-production.up.railway.app/api/resumes", {
+      const res = await fetch(`${BACKEND_URL}/api/resumes`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.ok) {
@@ -84,7 +86,7 @@ export default function Profile() {
     setSaving(true);
     setSaveMsg("");
     try {
-      const res = await fetch("https://selectify-platform-production.up.railway.app/api/profile", {
+      const res = await fetch(`${BACKEND_URL}/api/profile`, {
         method: "PUT",
         headers: {
           "Content-Type": "application/json",
@@ -117,7 +119,7 @@ export default function Profile() {
     formData.append("file", file);
 
     try {
-      const res = await fetch("https://selectify-platform-production.up.railway.app/api/upload-avatar", {
+      const res = await fetch(`${BACKEND_URL}/api/upload-avatar`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -141,7 +143,7 @@ export default function Profile() {
     formData.append("file", file);
 
     try {
-      const res = await fetch("https://selectify-platform-production.up.railway.app/api/resumes", {
+      const res = await fetch(`${BACKEND_URL}/api/resumes`, {
         method: "POST",
         headers: { Authorization: `Bearer ${token}` },
         body: formData,
@@ -160,7 +162,7 @@ export default function Profile() {
     const token = getToken();
     if (!token) return;
     try {
-      const res = await fetch(`https://selectify-platform-production.up.railway.app/api/resumes/${id}`, {
+      const res = await fetch(`${BACKEND_URL}/api/resumes/${id}`, {
         method: "DELETE",
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -188,7 +190,7 @@ export default function Profile() {
               >
                 {avatarUrl ? (
                   <img
-                    src={`https://selectify-platform-production.up.railway.app${avatarUrl}`}
+                    src={`${BACKEND_URL}${avatarUrl}`}
                     alt="Avatar"
                     className="w-full h-full object-cover"
                   />
@@ -364,7 +366,7 @@ export default function Profile() {
                     </div>
                     <div className="flex items-center gap-2">
                       <a
-                        href={`https://selectify-platform-production.up.railway.app${resume.file_path}`}
+                        href={`${BACKEND_URL}${resume.file_path}`}
                         target="_blank"
                         rel="noopener noreferrer"
                         className="p-2 rounded-lg hover:bg-white/10 transition-colors text-slate-400 hover:text-sky-400"

@@ -19,7 +19,7 @@ export async function loader({ request, params }: { request: Request; params: { 
   const token = getCookie(request, "token");
 
   // Fetch from Python backend
-  const res = await fetch("https://selectify-platform-production.up.railway.app/api/dsa/progress", {
+  const res = await fetch("http://localhost:8000/api/dsa/progress", {
     headers: { Authorization: `Bearer ${token}` },
   });
   
@@ -45,7 +45,7 @@ export async function action({ request, params }: { request: Request; params: { 
     const language = formData.get("language") as string;
     const aiReview = formData.get("aiReview") as string;
 
-    await fetch("https://selectify-platform-production.up.railway.app/api/dsa/progress", {
+    await fetch("http://localhost:8000/api/dsa/progress", {
       method: "POST",
       headers: {
         Authorization: `Bearer ${token}`,

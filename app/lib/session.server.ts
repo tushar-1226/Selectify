@@ -1,4 +1,5 @@
 import { redirect } from "react-router";
+import { BACKEND_URL } from "~/lib/config";
 
 function setCookie(res: Response, name: string, value: string, options: Record<string, any> = {}) {
   let cookie = `${name}=${encodeURIComponent(value)}`;
@@ -86,7 +87,7 @@ export async function requireAuth(request: Request) {
 // Register a new user
 export async function registerUser(email: string, password: string, name?: string) {
   // Call Python backend REST API for registration
-  const res = await fetch("https://selectify-platform-production.up.railway.app/api/register", {
+  const res = await fetch(`${BACKEND_URL}/api/register`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password, name }),
@@ -102,7 +103,7 @@ export async function registerUser(email: string, password: string, name?: strin
 // Login an existing user
 export async function loginUser(email: string, password: string) {
   // Call Python backend REST API for login
-  const res = await fetch("https://selectify-platform-production.up.railway.app/api/login", {
+  const res = await fetch(`${BACKEND_URL}/api/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email, password }),

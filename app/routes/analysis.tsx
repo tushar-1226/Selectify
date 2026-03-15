@@ -2,6 +2,7 @@ import type { Route } from "./+types/home";
 import { Link, useSearchParams } from "react-router";
 import { useState } from "react";
 import { requireAuth, getCookie } from "~/lib/session.server";
+import { BACKEND_URL } from "~/lib/config";
 
 export function meta({ }: Route.MetaArgs) {
   return [
@@ -48,7 +49,7 @@ export async function loader({ request }: { request: Request }) {
   }
 
   try {
-    const backendResponse = await fetch(`https://selectify-platform-production.up.railway.app/api/resume-analysis/single/${id}`, {
+    const backendResponse = await fetch(`${BACKEND_URL}/api/resume-analysis/single/${id}`, {
       method: "GET",
       headers: {
         "Authorization": `Bearer ${token}`

@@ -14,7 +14,7 @@ export async function loader({ request }: { request: Request }) {
   await requireAuth(request);
   const token = getCookie(request, "token");
 
-  const res = await fetch("https://selectify-platform-production.up.railway.app/api/mock-interviews", {
+  const res = await fetch("http://localhost:8000/api/mock-interviews", {
     headers: { Authorization: `Bearer ${token}` },
   });
 
